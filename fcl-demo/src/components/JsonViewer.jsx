@@ -11,7 +11,7 @@ const JsonViewer = ({ value, onChange, height = '500px' }) => {
         mode="json"
         theme="tomorrow"
         showGutter={false}
-        readOnly="true"
+        readOnly
         value={value}
         height={height}
         onChange={onChange}

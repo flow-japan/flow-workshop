@@ -103,15 +103,15 @@ const DeployContract = () => {
         <Heading size="lg">Deploy contract</Heading>
       </Box>
       <Box p={2}>
-        <Text>Please input a name of the contract.</Text>
+        <Text>Please input the name of the contract.</Text>
         <Input value={contractName} onChange={updateContractName} />
       </Box>
       <Box p={2}>
-        <Text size="md">Transaction:</Text>
+        <Text size="md">Transaction(generated automatically)</Text>
         <JsonViewer value={transaction} height="100px" />
       </Box>
       <Box p={2}>
-        <Text size="md">Contract:</Text>
+        <Text size="md">Please edit the contract to be deployed.</Text>
         <CodeEditor value={contract} onChange={updateContract} />
       </Box>
       <Box p={2}>
