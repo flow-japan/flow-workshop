@@ -120,6 +120,8 @@ const DeployContract = () => {
       </Box>
       <Box p={2}>
         <Code w="100%">Status: {status}</Code>
+      </Box>
+      <Box p={2}>
         {transactionResult && (
           <Code w="100%">
             Result: {JSON.stringify(transactionResult, null, 2)}
