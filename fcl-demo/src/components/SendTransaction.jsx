@@ -112,7 +112,7 @@ const SendTransaction = () => {
       <Box p={2}>
         <Code w="100%">Status: {status}</Code>
       </Box>
-      <Box>
+      <Box p={2}>
         {transaction && (
           <Code w="100%">Result: {JSON.stringify(transaction, null, 2)}</Code>
         )}
