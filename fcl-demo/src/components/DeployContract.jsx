@@ -11,6 +11,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import CodeEditor from './CodeEditor';
+import JsonViewer from './JsonViewer';
 
 const deployTransaction = `\
 transaction(code: String) {
@@ -107,7 +108,7 @@ const DeployContract = () => {
       </Box>
       <Box p={2}>
         <Text size="md">Transaction:</Text>
-        <Code>{transaction}</Code>
+        <JsonViewer value={transaction} height="100px" />
       </Box>
       <Box p={2}>
         <Text size="md">Contract:</Text>
@@ -123,9 +124,7 @@ const DeployContract = () => {
       </Box>
       <Box p={2}>
         {transactionResult && (
-          <Code w="100%">
-            Result: {JSON.stringify(transactionResult, null, 2)}
-          </Code>
+          <JsonViewer value={JSON.stringify(transactionResult, null, 2)} />
         )}
       </Box>
     </Container>

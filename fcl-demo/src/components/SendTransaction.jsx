@@ -12,8 +12,7 @@ import {
 } from '@chakra-ui/react';
 
 import CodeEditor from './CodeEditor';
-import 'ace-builds/src-noconflict/mode-java';
-import 'ace-builds/src-noconflict/theme-github';
+import JsonViewer from './JsonViewer';
 
 const simpleTransaction = `\
 import HelloWorld from 0x80617c721f7c4cfa
@@ -27,13 +26,13 @@ transaction {
 
 const SendTransaction = () => {
   const [status, setStatus] = useState('Not started');
-  const [transaction, setTransaction] = useState(null);
+  const [transactionResult, setTransactionResult] = useState(null);
   const [transactionCode, setTransactionCode] = useState(simpleTransaction);
   const [gas, setGas] = useState(100);
   const [authorize, setAuthorize] = useState(true);
+
   const updateGas = (event) => {
     event.preventDefault();
-
     const intValue = parseInt(event.target.value, 10);
     setGas(intValue);
   };
@@ -41,6 +40,7 @@ const SendTransaction = () => {
   const updateTransactionCode = (value) => {
     setTransactionCode(value);
   };
+
   const sendTransaction = async (event) => {
     event.preventDefault();
 
@@ -68,13 +68,15 @@ const SendTransaction = () => {
 
       setStatus('Transaction sent, waiting for confirmation');
 
-      const unsub = fcl.tx({ transactionId }).subscribe((aTransaction) => {
-        setTransaction(aTransaction);
-        if (fcl.tx.isSealed(aTransaction)) {
-          setStatus('Transaction is Sealed');
-          unsub();
-        }
-      });
+      const unsub = fcl
+        .tx({ transactionId })
+        .subscribe((currentTransaction) => {
+          setTransactionResult(currentTransaction);
+          if (fcl.tx.isSealed(currentTransaction)) {
+            setStatus('Transaction is Sealed');
+            unsub();
+          }
+        });
     } catch (error) {
       console.error(error);
       setStatus('Transaction failed');
@@ -113,8 +115,8 @@ const SendTransaction = () => {
         <Code w="100%">Status: {status}</Code>
       </Box>
       <Box p={2}>
-        {transaction && (
-          <Code w="100%">Result: {JSON.stringify(transaction, null, 2)}</Code>
+        {transactionResult && (
+          <JsonViewer value={JSON.stringify(transactionResult, null, 2)} />
         )}
       </Box>
     </Container>

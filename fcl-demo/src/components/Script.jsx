@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import * as fcl from '@onflow/fcl';
-
-import { Button, Code, Container, Heading, Box } from '@chakra-ui/react';
-
+import { Button, Container, Heading, Box } from '@chakra-ui/react';
+import JsonViewer from './JsonViewer';
 import CodeEditor from './CodeEditor';
 
 const scriptOne = `\
@@ -14,9 +13,11 @@ pub fun main(): Int {
 export default function Script() {
   const [data, setData] = useState(null);
   const [script, setScript] = useState(scriptOne);
+
   const updateScript = (value) => {
     setScript(value);
   };
+
   const runScript = async (event) => {
     event.preventDefault();
     await fcl
@@ -40,7 +41,9 @@ export default function Script() {
       <Box p={2}>
         <Button onClick={runScript}>Run Script</Button>
       </Box>
-      <Box p={2}>{data && <Code>{JSON.stringify(data, null, 2)}</Code>}</Box>
+      <Box p={2}>
+        {data && <JsonViewer value={JSON.stringify(data, null, 2)} />}
+      </Box>
     </Container>
   );
 }
