@@ -26,7 +26,7 @@ transaction {
 
 const SendTransaction = () => {
   const [status, setStatus] = useState('Not started');
-  const [transactionResult, setTransactionResult] = useState(null);
+  const [transactionResult, setTransactionResult] = useState();
   const [transactionCode, setTransactionCode] = useState(simpleTransaction);
   const [gas, setGas] = useState(100);
   const [authorize, setAuthorize] = useState(true);
@@ -115,9 +115,8 @@ const SendTransaction = () => {
         <Code w="100%">Status: {status}</Code>
       </Box>
       <Box p={2}>
-        {transactionResult && (
-          <JsonViewer value={JSON.stringify(transactionResult, null, 2)} />
-        )}
+        <Heading size="md">Result:</Heading>
+        <JsonViewer value={JSON.stringify(transactionResult, null, 2)} />
       </Box>
     </Container>
   );

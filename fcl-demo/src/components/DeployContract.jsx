@@ -39,7 +39,7 @@ pub contract HelloWorld {
 
 const DeployContract = () => {
   const [status, setStatus] = useState('Not started');
-  const [transactionResult, setTransactionResult] = useState('');
+  const [transactionResult, setTransactionResult] = useState();
   const [contractName, setContractName] = useState('HelloWorld');
   const [transaction, setTransaction] = useState(deployTransaction);
   const updateContractName = (event) => {
@@ -123,9 +123,8 @@ const DeployContract = () => {
         <Code w="100%">Status: {status}</Code>
       </Box>
       <Box p={2}>
-        {transactionResult && (
-          <JsonViewer value={JSON.stringify(transactionResult, null, 2)} />
-        )}
+        <Heading size="md">Result:</Heading>
+        <JsonViewer value={JSON.stringify(transactionResult, null, 2)} />
       </Box>
     </Container>
   );
