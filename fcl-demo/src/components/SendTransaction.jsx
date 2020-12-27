@@ -29,7 +29,7 @@ const SendTransaction = () => {
   const [status, setStatus] = useState('Not started');
   const [transaction, setTransaction] = useState(null);
   const [transactionCode, setTransactionCode] = useState(simpleTransaction);
-  const [gas, setGas] = useState(10);
+  const [gas, setGas] = useState(100);
   const [authorize, setAuthorize] = useState(false);
   const updateGas = (event) => {
     event.preventDefault();
