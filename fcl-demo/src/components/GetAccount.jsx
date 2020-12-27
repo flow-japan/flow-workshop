@@ -37,7 +37,7 @@ const GetAccount = () => {
         </Button>
       </Box>
       <Box p={2}>
-        <Heading size="lg">Result:</Heading>
+        <Heading size="md">Result:</Heading>
         <JsonViewer value={data} />
       </Box>
     </Container>

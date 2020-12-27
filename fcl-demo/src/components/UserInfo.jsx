@@ -15,9 +15,7 @@ const UserInfo = () => {
   return (
     <Container m={4} maxWidth="3xl">
       <Box p={2}>
-        <Heading size="lg">Current User info</Heading>
-      </Box>
-      <Box p={2}>
+        <Heading size="md">Current User info</Heading>
         <JsonViewer value={JSON.stringify(user, null, 2)} />
       </Box>
     </Container>
