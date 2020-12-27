@@ -1,0 +1,74 @@
+{
+    "env": {
+        "browser": true,
+        "es2020": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "airbnb",
+        "airbnb/hooks",
+        "plugin:import/errors",
+        "plugin:import/warnings",
+        "plugin:prettier/recommended",
+        "prettier",
+        "prettier/react",
+        "prettier/standard",
+        "plugin:jest/recommended",
+        "plugin:jest/style"
+    ],
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 11,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "jsx-a11y",
+        "prettier",
+        "react",
+        "react-hooks",
+        "import",
+        "jest"
+    ],
+    "rules": {
+        "react/prop-types": 0,
+        "lines-between-class-members": [
+            "error",
+            "always"
+        ],
+        "no-void": "off",
+        "padding-line-between-statements": [
+            "error",
+            {
+                "blankLine": "always",
+                "prev": "*",
+                "next": "return"
+            }
+        ],
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "js": "never",
+                "jsx": "never"
+
+            }
+        ],
+        "react/jsx-filename-extension":[
+            "error",
+            {
+                "extensions":[".jsx"]
+            }
+        ],
+        "react/jsx-props-no-spreading":[
+            "error",
+            {
+                "html":"enforce",
+                "custom":"enforce",
+                "explicitSpread": "ignore"
+            }
+        ],
+        "react/react-in-jsx-scope":"off"
+    }
+}
