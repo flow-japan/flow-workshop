@@ -34,9 +34,7 @@ const GetAccount = () => {
           Check Balance
         </Button>
       </Box>
-      <Box p={2}>
-        {data && <Code>{JSON.stringify(data.balance, null, 2)}</Code>}
-      </Box>
+      <Box p={2}>{data && <Code>{JSON.stringify(data, null, 2)}</Code>}</Box>
     </Container>
   );
 };
