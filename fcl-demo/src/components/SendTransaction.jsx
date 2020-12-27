@@ -94,7 +94,7 @@ const SendTransaction = () => {
             setAuthorize(!authorize);
           }}
         >
-          Signature required.
+          Authorization required.
         </Checkbox>
       </Box>
       <Box p={2}>
