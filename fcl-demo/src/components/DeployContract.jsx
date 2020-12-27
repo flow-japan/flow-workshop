@@ -97,7 +97,7 @@ const DeployContract = () => {
   };
 
   return (
-    <Container m={4}>
+    <Container m={4} maxWidth="3xl">
       <Box p={2}>
         <Heading size="lg">Deploy contract</Heading>
       </Box>

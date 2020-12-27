@@ -30,7 +30,7 @@ const SendTransaction = () => {
   const [transaction, setTransaction] = useState(null);
   const [transactionCode, setTransactionCode] = useState(simpleTransaction);
   const [gas, setGas] = useState(100);
-  const [authorize, setAuthorize] = useState(false);
+  const [authorize, setAuthorize] = useState(true);
   const updateGas = (event) => {
     event.preventDefault();
 
@@ -82,7 +82,7 @@ const SendTransaction = () => {
   };
 
   return (
-    <Container m={4}>
+    <Container m={4} maxWidth="3xl">
       <Box p={2}>
         <Heading size="lg">Send transaction</Heading>
       </Box>
