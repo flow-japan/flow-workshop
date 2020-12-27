@@ -14,7 +14,7 @@ const CodeEditor = ({ value, onChange }) => {
         onChange={onChange}
         name="UNIQUE_ID_OF_DIV"
         width="100%"
-        wrapEnabled="true"
+        wrapEnabled
       />
     </Box>
   );
