@@ -7,9 +7,9 @@ const SignInOutButton = ({ user: { loggedIn } }) => {
     event.preventDefault();
 
     if (loggedIn) {
-      fcl.unauthenticate();
+      fcl.unauthenticate(); // login
     } else {
-      fcl.authenticate();
+      fcl.authenticate(); // logout
     }
   };
 
@@ -25,7 +25,7 @@ const Authenticate = () => {
 
   useEffect(
     () =>
-      fcl.currentUser().subscribe((currentUser) => setUser({ ...currentUser })),
+      fcl.currentUser().subscribe((currentUser) => setUser({ ...currentUser })), // get latest account information
     []
   );
 
