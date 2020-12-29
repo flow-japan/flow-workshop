@@ -10,3 +10,8 @@ All the demo cases are located in `./src/demo`. Each component is responsible fo
 - **UserInfo**: Subscribes to `fcl.currentUser()` and shows the connected user account information
 - **SendTransaction**: Sends a simple transaction to Flow. This requires the signatures from the connected user
 - **DeployContract**: Deploys a contract to the current user's code storage
+
+## This demo is made based on below 2 apps.
+https://github.com/portto/fcl-demo
+  
+https://github.com/onflow/flow-js-sdk/tree/master/examples/react-fcl-demo
