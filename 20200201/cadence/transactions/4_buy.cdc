@@ -1,11 +1,12 @@
 import FungibleToken from 0xFUNGIBLETOKENADDRESS
 import NonFungibleToken from 0xNONFUNGIBLETOKEN
 import Kibble from 0xKIBBLE
+import FlowToken from 0xFLOWTOKEN
 import KittyItems from 0xKITTYITEMS
 import KittyItemsMarket from 0xKITTYMARKET
 
 transaction(saleItemID: UInt64, marketCollectionAddress: Address) {
-    let paymentVault: @FungibleToken.Vault
+    let paymentTokenVault: @FungibleToken.Vault
     let kittyItemsCollection: &KittyItems.Collection{NonFungibleToken.Receiver}
     let marketCollection: &KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}
 
@@ -17,11 +18,19 @@ transaction(saleItemID: UInt64, marketCollectionAddress: Address) {
             .borrow()
             ?? panic("Could not borrow market collection from market address")
 
-        let price = self.marketCollection.borrowSaleItem(saleItemID: saleItemID).salePrice
+        let saleItem = self.marketCollection.borrowSaleItem(saleItemID: saleItemID)
+        let price = saleItem.salePrice
+        let paymentTokenAddress = saleItem.salePaymentTokenAddress
 
-        let mainKibbleVault = acct.borrow<&Kibble.Vault>(from: Kibble.VaultStoragePath)
-            ?? panic("Cannot borrow Kibble vault from acct storage")
-        self.paymentVault <- mainKibbleVault.withdraw(amount: price)
+        if paymentTokenAddress == Address(0xKIBBLE) {
+            let kibbleVault = acct.borrow<&Kibble.Vault>(from: Kibble.VaultStoragePath)
+                ?? panic("Cannot borrow Kibble vault from acct storage")
+            self.paymentTokenVault <- kibbleVault.withdraw(amount: price)
+        } else {
+            let flowTokenVault = acct.borrow<&FlowToken.Vault>(from: /storage/flowTokenVault)
+                ?? panic("Cannot borrow FlowToken vault from acct storage")
+            self.paymentTokenVault <- flowTokenVault.withdraw(amount: price)
+        }
 
         self.kittyItemsCollection = acct.borrow<&KittyItems.Collection{NonFungibleToken.Receiver}>(
             from: KittyItems.CollectionStoragePath
@@ -32,7 +41,7 @@ transaction(saleItemID: UInt64, marketCollectionAddress: Address) {
         self.marketCollection.purchase(
             saleItemID: saleItemID,
             buyerCollection: self.kittyItemsCollection,
-            buyerPayment: <- self.paymentVault
+            buyerPayment: <- self.paymentTokenVault
         )
     }
 }

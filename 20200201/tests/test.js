@@ -4,40 +4,50 @@ const deployer = require('./services/deployer');
 const utils = require('./utils/testUtils');
 const config = require('./config');
 
-describe('KittyItemsMarket', () => {
-  let deployedAccount;
+describe('KittyItemsMarket', async () => {
+  let admin;
+  let seller;
+  let buyer;
 
   before(async () => {
     flow.init(config.apiUrl, config.deployerAddress, config.deployerPrivateKey, config.deployerKeyIndex);
-    deployedAccount = await deployer.deploy(flow, config.fungibleTokenAddress);
-    await utils.initAccount(deployedAccount);
-    await utils.mintFT(deployedAccount);
-    await utils.mintNFT(deployedAccount);
+    admin = await flow.createFlowAccount();
+    seller = await flow.createFlowAccount();
+    buyer = await flow.createFlowAccount();
+
+    await deployer.deploy(admin, config.fungibleTokenAddress);
+
+    await utils.initAccount(admin);
+    await utils.initAccount(seller);
+    await utils.initAccount(buyer);
+
+    await utils.mintNFT({ to: seller });
+    await utils.mintFT({ to: buyer });
+    await utils.tranferFlowToken({ to: buyer });
   });
 
   describe('Sell', () => {
     it('should success', async () => {
-      const res = await utils.sell(deployedAccount);
+      const paymentTokenAddress = `0x${config.flowTokenAddress}`;
+      // const paymentTokenAddress = `0x${admin.address}`;
+      const res = await utils.sell({ seller, paymentTokenAddress });
       console.log(res.events);
       res.events.length.should.equal(2);
-      res.events[0].type.should.have.string('SaleOfferCreated');
-      res.events[1].type.should.have.string('CollectionInsertedSaleOffer');
+      res.events.some(e => e.type.includes('SaleOfferCreated')).should.be.true;
+      res.events.some(e => e.type.includes('CollectionInsertedSaleOffer')).should.be.true;
     });
 
-    // TODO: 同じアカウントで購入しているが、本来は別のアカウントで購入のテストをするべき
     describe('Buy', () => {
       it('should success', async () => {
-        const res = await utils.buy(deployedAccount);
+        const res = await utils.buy({ buyer, seller });
         console.log(res.events);
-        res.events.length.should.equal(8);
-        res.events[0].type.should.have.string('Kibble.TokensWithdrawn');
-        res.events[1].type.should.have.string('KittyItemsMarket.CollectionRemovedSaleOffer');
-        res.events[2].type.should.have.string('Kibble.TokensDeposited');
-        res.events[3].type.should.have.string('Kibble.TokensBurned'); // amount: '0.00000000'
-        res.events[4].type.should.have.string('KittyItems.Withdraw');
-        res.events[5].type.should.have.string('KittyItems.Deposit');
-        res.events[6].type.should.have.string('KittyItemsMarket.SaleOfferAccepted');
-        res.events[7].type.should.have.string('KittyItemsMarket.SaleOfferFinished');
+        res.events.some(e => e.type.includes('TokensWithdrawn')).should.be.true;
+        res.events.some(e => e.type.includes('TokensDeposited')).should.be.true;
+        res.events.some(e => e.type.includes('KittyItems.Withdraw')).should.be.true;
+        res.events.some(e => e.type.includes('KittyItems.Deposit')).should.be.true;
+        res.events.some(e => e.type.includes('KittyItemsMarket.CollectionRemovedSaleOffer')).should.be.true;
+        res.events.some(e => e.type.includes('KittyItemsMarket.SaleOfferAccepted')).should.be.true;
+        res.events.some(e => e.type.includes('KittyItemsMarket.SaleOfferFinished')).should.be.true;
       });
     });  
   });

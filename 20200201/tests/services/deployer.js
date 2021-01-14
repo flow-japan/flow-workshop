@@ -1,9 +1,13 @@
 const fs = require('fs');
 const path = require('path');
+const flow = require('../services/flow');
 
 class DeployerService {
-  async deploy(flow, fungibleTokenAddress) {
-    const account = await flow.createFlowAccount();
+  constructor() {
+    this.account;
+  }
+
+  async deploy(account, fungibleTokenAddress) {
     const authorization = flow.authorize(account);
 
     // Deploy Kibble
@@ -56,7 +60,7 @@ class DeployerService {
       payer: authorization
     });
 
-    return account;
+    this.account = account;
   }
 }
 

@@ -31,7 +31,7 @@ pub contract KittyItemsMarket {
     // SaleOffer events.
     //
     // A sale offer has been created.
-    pub event SaleOfferCreated(itemID: UInt64, price: UFix64)
+    pub event SaleOfferCreated(itemID: UInt64, price: UFix64, paymentTokenAddress: Address)
     // Someone has purchased an item that was offered for sale.
     pub event SaleOfferAccepted(itemID: UInt64)
     // A sale offer has been destroyed, with or without being accepted.
@@ -56,6 +56,7 @@ pub contract KittyItemsMarket {
         pub var saleCompleted: Bool
         pub let saleItemID: UInt64
         pub let salePrice: UFix64
+        pub let salePaymentTokenAddress: Address
     }
 
     // SaleOffer
@@ -73,7 +74,9 @@ pub contract KittyItemsMarket {
         // The sale payment price.
         pub let salePrice: UFix64
         // The Kibble vault that will receive that payment if teh sale completes successfully.
-        access(self) let sellerPaymentReceiver: Capability<&Kibble.Vault{FungibleToken.Receiver}>
+        access(self) let sellerPaymentReceiver: Capability<&AnyResource{FungibleToken.Receiver}>
+        // The sale payment token address
+        pub let salePaymentTokenAddress: Address
 
         // Called by a purchaser to accept the sale offer.
         // If they send the correct payment in Kibble, and if the item is still available,
@@ -112,8 +115,9 @@ pub contract KittyItemsMarket {
         init(
             sellerItemProvider: Capability<&KittyItems.Collection{NonFungibleToken.Provider}>,
             saleItemID: UInt64,
-            sellerPaymentReceiver: Capability<&Kibble.Vault{FungibleToken.Receiver}>,
-            salePrice: UFix64
+            sellerPaymentReceiver: Capability<&AnyResource{FungibleToken.Receiver}>,
+            salePrice: UFix64,
+            salePaymentTokenAddress: Address // TODO: この情報が正しいことを確認すべき（現状の Cadence 仕様では難しい）
         ) {
             pre {
                 sellerItemProvider.borrow() != nil: "Cannot borrow seller"
@@ -127,8 +131,9 @@ pub contract KittyItemsMarket {
 
             self.sellerPaymentReceiver = sellerPaymentReceiver
             self.salePrice = salePrice
+            self.salePaymentTokenAddress = salePaymentTokenAddress
 
-            emit SaleOfferCreated(itemID: self.saleItemID, price: self.salePrice)
+            emit SaleOfferCreated(itemID: self.saleItemID, price: self.salePrice, paymentTokenAddress: self.salePaymentTokenAddress)
         }
     }
 
@@ -138,14 +143,16 @@ pub contract KittyItemsMarket {
     pub fun createSaleOffer (
         sellerItemProvider: Capability<&KittyItems.Collection{NonFungibleToken.Provider}>,
         saleItemID: UInt64,
-        sellerPaymentReceiver: Capability<&Kibble.Vault{FungibleToken.Receiver}>,
-        salePrice: UFix64
+        sellerPaymentReceiver: Capability<&AnyResource{FungibleToken.Receiver}>,
+        salePrice: UFix64,
+        salePaymentTokenAddress: Address
     ): @SaleOffer {
         return <-create SaleOffer(
             sellerItemProvider: sellerItemProvider,
             saleItemID: saleItemID,
             sellerPaymentReceiver: sellerPaymentReceiver,
-            salePrice: salePrice
+            salePrice: salePrice,
+            salePaymentTokenAddress: salePaymentTokenAddress
         )
     }
 
