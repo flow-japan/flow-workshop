@@ -3,22 +3,22 @@ import NonFungibleToken from 0xNONFUNGIBLETOKEN
 import Kibble from 0xKIBBLE
 import FlowToken from 0xFLOWTOKEN
 import KittyItems from 0xKITTYITEMS
-import KittyItemsMarket from 0xKITTYMARKET
+import SampleMarket from 0xKITTYMARKET
 
 transaction(saleItemID: UInt64, marketCollectionAddress: Address) {
     let paymentTokenVault: @FungibleToken.Vault
     let kittyItemsCollection: &KittyItems.Collection{NonFungibleToken.Receiver}
-    let marketCollection: &KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}
+    let marketCollection: &SampleMarket.Collection{SampleMarket.CollectionPublic}
 
     prepare(acct: AuthAccount) {
         self.marketCollection = getAccount(marketCollectionAddress)
-            .getCapability<&KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}>(
-                KittyItemsMarket.CollectionPublicPath
+            .getCapability<&SampleMarket.Collection{SampleMarket.CollectionPublic}>(
+                SampleMarket.CollectionPublicPath
             )!
             .borrow()
             ?? panic("Could not borrow market collection from market address")
 
-        let saleItem = self.marketCollection.borrowSaleItem(saleItemID: saleItemID)
+        let saleItem = self.marketCollection.borrowSaleItem(saleItemTokenAddress: 0xKITTYITEMS, saleItemID: saleItemID)
         let price = saleItem.salePrice
         let paymentTokenAddress = saleItem.salePaymentTokenAddress
 
@@ -39,6 +39,7 @@ transaction(saleItemID: UInt64, marketCollectionAddress: Address) {
 
     execute {
         self.marketCollection.purchase(
+            saleItemTokenAddress: 0xKITTYITEMS,
             saleItemID: saleItemID,
             buyerCollection: self.kittyItemsCollection,
             buyerPayment: <- self.paymentTokenVault

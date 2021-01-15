@@ -1,7 +1,5 @@
 import FungibleToken from 0xFUNGIBLETOKENADDRESS
 import NonFungibleToken from 0xNONFUNGIBLETOKEN
-import Kibble from 0xKIBBLE
-import KittyItems from 0xKITTYITEMS
 
 /*
     This is a simple KittyItems initial sale contract for the DApp to use
@@ -27,22 +25,22 @@ import KittyItems from 0xKITTYITEMS
 
  */
 
-pub contract KittyItemsMarket {
+pub contract SampleMarket {
     // SaleOffer events.
     //
     // A sale offer has been created.
-    pub event SaleOfferCreated(itemID: UInt64, price: UFix64, paymentTokenAddress: Address)
+    pub event SaleOfferCreated(itemTokenAddress: Address, itemID: UInt64, price: UFix64, paymentTokenAddress: Address)
     // Someone has purchased an item that was offered for sale.
-    pub event SaleOfferAccepted(itemID: UInt64)
+    pub event SaleOfferAccepted(itemTokenAddress: Address, itemID: UInt64)
     // A sale offer has been destroyed, with or without being accepted.
-    pub event SaleOfferFinished(itemID: UInt64)
+    pub event SaleOfferFinished(itemTokenAddress: Address, itemID: UInt64)
     
     // Collection events.
     //
     // A sale offer has been inserted into the collection of Address.
-    pub event CollectionInsertedSaleOffer(saleItemID: UInt64, saleItemCollection: Address)
+    pub event CollectionInsertedSaleOffer(saleItemTokenAddress: Address, saleItemID: UInt64, saleItemCollection: Address)
     // A sale offer has been removed from the collection of Address.
-    pub event CollectionRemovedSaleOffer(saleItemID: UInt64, saleItemCollection: Address)
+    pub event CollectionRemovedSaleOffer(saleItemTokenAddress: Address, saleItemID: UInt64, saleItemCollection: Address)
 
     // Named paths
     //
@@ -54,6 +52,7 @@ pub contract KittyItemsMarket {
     //
     pub resource interface SaleOfferPublicView {
         pub var saleCompleted: Bool
+        pub let saleItemTokenAddress: Address
         pub let saleItemID: UInt64
         pub let salePrice: UFix64
         pub let salePaymentTokenAddress: Address
@@ -66,10 +65,12 @@ pub contract KittyItemsMarket {
         // Whether the sale has completed with someone purchasing the item.
         pub var saleCompleted: Bool
 
+        // The item token address
+        pub let saleItemTokenAddress: Address
         // The KittyItems NFT ID for sale.
         pub let saleItemID: UInt64
         // The collection containing that ID.
-        access(self) let sellerItemProvider: Capability<&KittyItems.Collection{NonFungibleToken.Provider}>
+        access(self) let sellerItemProvider: Capability<&AnyResource{NonFungibleToken.Provider}>
 
         // The sale payment price.
         pub let salePrice: UFix64
@@ -83,7 +84,7 @@ pub contract KittyItemsMarket {
         // the KittyItems NFT will be placed in their KittyItems.Collection .
         //
         pub fun accept(
-            buyerCollection: &KittyItems.Collection{NonFungibleToken.Receiver},
+            buyerCollection: &AnyResource{NonFungibleToken.Receiver},
             buyerPayment: @FungibleToken.Vault
         ) {
             pre {
@@ -98,14 +99,14 @@ pub contract KittyItemsMarket {
             let nft <- self.sellerItemProvider.borrow()!.withdraw(withdrawID: self.saleItemID)
             buyerCollection.deposit(token: <-nft)
 
-            emit SaleOfferAccepted(itemID: self.saleItemID)
+            emit SaleOfferAccepted(itemTokenAddress: self.saleItemTokenAddress, itemID: self.saleItemID)
         }
 
         // destructor
         //
         destroy() {
             // Whether the sale completed or not, publicize that it is being withdrawn.
-            emit SaleOfferFinished(itemID: self.saleItemID)
+            emit SaleOfferFinished(itemTokenAddress: self.saleItemTokenAddress, itemID: self.saleItemID)
         }
 
         // initializer
@@ -113,7 +114,8 @@ pub contract KittyItemsMarket {
         // to transfer the KittyItems NFT and the capability to receive Kibble in payment.
         //
         init(
-            sellerItemProvider: Capability<&KittyItems.Collection{NonFungibleToken.Provider}>,
+            sellerItemProvider: Capability<&AnyResource{NonFungibleToken.Provider}>,
+            saleItemTokenAddress: Address,
             saleItemID: UInt64,
             sellerPaymentReceiver: Capability<&AnyResource{FungibleToken.Receiver}>,
             salePrice: UFix64,
@@ -127,13 +129,14 @@ pub contract KittyItemsMarket {
             self.saleCompleted = false
 
             self.sellerItemProvider = sellerItemProvider
+            self.saleItemTokenAddress = saleItemTokenAddress
             self.saleItemID = saleItemID
 
             self.sellerPaymentReceiver = sellerPaymentReceiver
             self.salePrice = salePrice
             self.salePaymentTokenAddress = salePaymentTokenAddress
 
-            emit SaleOfferCreated(itemID: self.saleItemID, price: self.salePrice, paymentTokenAddress: self.salePaymentTokenAddress)
+            emit SaleOfferCreated(itemTokenAddress: self.saleItemTokenAddress, itemID: self.saleItemID, price: self.salePrice, paymentTokenAddress: self.salePaymentTokenAddress)
         }
     }
 
@@ -141,7 +144,8 @@ pub contract KittyItemsMarket {
     // Make creating a SaleOffer publicly accessible.
     //
     pub fun createSaleOffer (
-        sellerItemProvider: Capability<&KittyItems.Collection{NonFungibleToken.Provider}>,
+        sellerItemProvider: Capability<&AnyResource{NonFungibleToken.Provider}>,
+        saleItemTokenAddress: Address,
         saleItemID: UInt64,
         sellerPaymentReceiver: Capability<&AnyResource{FungibleToken.Receiver}>,
         salePrice: UFix64,
@@ -149,6 +153,7 @@ pub contract KittyItemsMarket {
     ): @SaleOffer {
         return <-create SaleOffer(
             sellerItemProvider: sellerItemProvider,
+            saleItemTokenAddress: saleItemTokenAddress,
             saleItemID: saleItemID,
             sellerPaymentReceiver: sellerPaymentReceiver,
             salePrice: salePrice,
@@ -161,19 +166,20 @@ pub contract KittyItemsMarket {
     // use by the collection's owner.
     //
     pub resource interface CollectionManager {
-        pub fun insert(offer: @KittyItemsMarket.SaleOffer)
-        pub fun remove(saleItemID: UInt64): @SaleOffer 
+        pub fun insert(offer: @SampleMarket.SaleOffer)
+        pub fun remove(saleItemTokenAddress: Address, saleItemID: UInt64): @SaleOffer 
     }
 
-        // CollectionPurchaser
+    // CollectionPurchaser
     // An interface to allow purchasing items via SaleOffers in a collection.
     // This function is also provided by CollectionPublic, it is here to support
     // more fine-grained access to the collection for as yet unspecified future use cases.
     //
     pub resource interface CollectionPurchaser {
         pub fun purchase(
+            saleItemTokenAddress: Address,
             saleItemID: UInt64,
-            buyerCollection: &KittyItems.Collection{NonFungibleToken.Receiver},
+            buyerCollection: &AnyResource{NonFungibleToken.Receiver},
             buyerPayment: @FungibleToken.Vault
         )
     }
@@ -182,11 +188,12 @@ pub contract KittyItemsMarket {
     // An interface to allow listing and borrowing SaleOffers, and purchasing items via SaleOffers in a collection.
     //
     pub resource interface CollectionPublic {
-        pub fun getSaleOfferIDs(): [UInt64]
-        pub fun borrowSaleItem(saleItemID: UInt64): &SaleOffer{SaleOfferPublicView}
+        pub fun getSaleOfferIDs(saleItemTokenAddress: Address): [UInt64]
+        pub fun borrowSaleItem(saleItemTokenAddress: Address, saleItemID: UInt64): &SaleOffer{SaleOfferPublicView}
         pub fun purchase(
+            saleItemTokenAddress: Address,
             saleItemID: UInt64,
-            buyerCollection: &KittyItems.Collection{NonFungibleToken.Receiver},
+            buyerCollection: &AnyResource{NonFungibleToken.Receiver},
             buyerPayment: @FungibleToken.Vault
         )
    }
@@ -200,20 +207,24 @@ pub contract KittyItemsMarket {
         // insert
         // Insert a SaleOffer into the collection, replacing one with the same saleItemID if present.
         //
-         pub fun insert(offer: @KittyItemsMarket.SaleOffer) {
+         pub fun insert(offer: @SampleMarket.SaleOffer) {
+            // TODO: saleOffers の構造を変える
+            let tokenAddress: Address = offer.saleItemTokenAddress
+
             let id: UInt64 = offer.saleItemID
 
             // add the new offer to the dictionary which removes the old one
             let oldOffer <- self.saleOffers[id] <- offer
             destroy oldOffer
 
-            emit CollectionInsertedSaleOffer(saleItemID: id, saleItemCollection: self.owner?.address!)
+            emit CollectionInsertedSaleOffer(saleItemTokenAddress: tokenAddress, saleItemID: id, saleItemCollection: self.owner?.address!)
         }
 
         // remove
         // Remove and return a SaleOffer from the collection.
-        pub fun remove(saleItemID: UInt64): @SaleOffer {
-            emit CollectionRemovedSaleOffer(saleItemID: saleItemID, saleItemCollection: self.owner?.address!)
+        pub fun remove(saleItemTokenAddress: Address, saleItemID: UInt64): @SaleOffer {
+            emit CollectionRemovedSaleOffer(saleItemTokenAddress: saleItemTokenAddress, saleItemID: saleItemID, saleItemCollection: self.owner?.address!)
+            // TODO: saleOffers の構造を変える
             return <-(self.saleOffers.remove(key: saleItemID) ?? panic("missing SaleOffer"))
         }
  
@@ -230,30 +241,41 @@ pub contract KittyItemsMarket {
         //   4. SaleOffer.SaleOfferFinished
         //
         pub fun purchase(
+            saleItemTokenAddress: Address,
             saleItemID: UInt64,
-            buyerCollection: &KittyItems.Collection{NonFungibleToken.Receiver},
+            buyerCollection: &AnyResource{NonFungibleToken.Receiver},
             buyerPayment: @FungibleToken.Vault
         ) {
             pre {
                 self.saleOffers[saleItemID] != nil: "SaleOffer does not exist in the collection!"
             }
-            let offer <- self.remove(saleItemID: saleItemID)
+            let offer <- self.remove(saleItemTokenAddress: saleItemTokenAddress, saleItemID: saleItemID)
             offer.accept(buyerCollection: buyerCollection, buyerPayment: <-buyerPayment)
             //FIXME: Is this correct? Or should we return it to the caller to dispose of?
             destroy offer
         }
 
+        // TODO: 実装する
+        // // getSaleOfferTokenAddresses
+        // // Returns an array of the token addresses that are in the collection
+        // //
+        // pub fun getSaleOfferIDs(): [Address] {
+        //     return self.saleOffers.keys
+        // }
+
         // getSaleOfferIDs
-        // Returns an array of the IDs that are in the collection
+        // Returns an array of the IDs that are in the collection of the token address
         //
-        pub fun getSaleOfferIDs(): [UInt64] {
+        pub fun getSaleOfferIDs(saleItemTokenAddress: Address): [UInt64] {
+            // TODO: 構造を変える
             return self.saleOffers.keys
         }
 
         // borrowSaleItem
         // Returns a read-only view of the SaleItem for the given saleItemID if it is contained by this collection.
         //
-        pub fun borrowSaleItem(saleItemID: UInt64): &SaleOffer{SaleOfferPublicView} {
+        pub fun borrowSaleItem(saleItemTokenAddress: Address, saleItemID: UInt64): &SaleOffer{SaleOfferPublicView} {
+            // TODO: 構造を変える
             pre {
                 self.saleOffers[saleItemID] != nil: "SaleOffer does not exist in the collection!"
             }
@@ -263,12 +285,14 @@ pub contract KittyItemsMarket {
         // destructor
         //
         destroy () {
+            // TODO: 構造を変える
             destroy self.saleOffers
         }
 
         // constructor
         //
         init () {
+            // TODO: 構造を変える
             self.saleOffers <- {}
         }
     }
@@ -282,7 +306,7 @@ pub contract KittyItemsMarket {
 
     init () {
         //FIXME: REMOVE SUFFIX BEFORE RELEASE
-        self.CollectionStoragePath = /storage/KittyItemsMarketCollection000
-        self.CollectionPublicPath = /public/KittyItemsMarketCollection000
+        self.CollectionStoragePath = /storage/SampleMarketCollection000
+        self.CollectionPublicPath = /public/SampleMarketCollection000
     }
 }

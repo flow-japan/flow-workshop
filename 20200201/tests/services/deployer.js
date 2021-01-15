@@ -47,13 +47,13 @@ class DeployerService {
 
     // Deploy kitty items market
     contract = fs
-      .readFileSync(path.join(__dirname, `../../cadence/contracts/kittyItemsMarket.cdc`), 'utf8')
+      .readFileSync(path.join(__dirname, `../../cadence/contracts/sampleMarket.cdc`), 'utf8')
       .replace(/0xFUNGIBLETOKENADDRESS/gi, `0x${fungibleTokenAddress}`)
       .replace(/0xNONFUNGIBLETOKEN/gi, `0x${account.address}`)
       .replace(/0xKIBBLE/gi, `0x${account.address}`)
       .replace(/0xKITTYITEMS/gi, `0x${account.address}`);
-    const kittyItemsMarket = await flow.addContract({
-      name: 'KittyItemsMarket',
+    const sampleMarket = await flow.addContract({
+      name: 'SampleMarket',
       code: contract,
       authorizations: [authorization],
       proposer: authorization,

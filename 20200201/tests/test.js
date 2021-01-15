@@ -4,7 +4,7 @@ const deployer = require('./services/deployer');
 const utils = require('./utils/testUtils');
 const config = require('./config');
 
-describe('KittyItemsMarket', async () => {
+describe('SampleMarket', async () => {
   let admin;
   let seller;
   let buyer;
@@ -28,9 +28,9 @@ describe('KittyItemsMarket', async () => {
 
   describe('Sell', () => {
     it('should success', async () => {
-      const paymentTokenAddress = `0x${config.flowTokenAddress}`;
-      // const paymentTokenAddress = `0x${admin.address}`;
-      const res = await utils.sell({ seller, paymentTokenAddress });
+      const salePaymentTokenAddress = `0x${config.flowTokenAddress}`;
+      // const salePaymentTokenAddress = `0x${admin.address}`;
+      const res = await utils.sell({ seller, salePaymentTokenAddress });
       console.log(res.events);
       res.events.length.should.equal(2);
       res.events.some(e => e.type.includes('SaleOfferCreated')).should.be.true;
@@ -45,10 +45,10 @@ describe('KittyItemsMarket', async () => {
         res.events.some(e => e.type.includes('TokensDeposited')).should.be.true;
         res.events.some(e => e.type.includes('KittyItems.Withdraw')).should.be.true;
         res.events.some(e => e.type.includes('KittyItems.Deposit')).should.be.true;
-        res.events.some(e => e.type.includes('KittyItemsMarket.CollectionRemovedSaleOffer')).should.be.true;
-        res.events.some(e => e.type.includes('KittyItemsMarket.SaleOfferAccepted')).should.be.true;
-        res.events.some(e => e.type.includes('KittyItemsMarket.SaleOfferFinished')).should.be.true;
+        res.events.some(e => e.type.includes('SampleMarket.CollectionRemovedSaleOffer')).should.be.true;
+        res.events.some(e => e.type.includes('SampleMarket.SaleOfferAccepted')).should.be.true;
+        res.events.some(e => e.type.includes('SampleMarket.SaleOfferFinished')).should.be.true;
       });
-    });  
+    });
   });
 });

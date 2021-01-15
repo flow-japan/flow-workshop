@@ -3,12 +3,12 @@ import NonFungibleToken from 0xNONFUNGIBLETOKEN
 import Kibble from 0xKIBBLE
 import FlowToken from 0xFLOWTOKEN
 import KittyItems from 0xKITTYITEMS
-import KittyItemsMarket from 0xKITTYMARKET
+import SampleMarket from 0xKITTYMARKET
 
 transaction(saleItemID: UInt64, saleItemPrice: UFix64, salePaymentTokenAddress: Address) {
     let paymentTokenVault: Capability<&AnyResource{FungibleToken.Receiver}>
-    let kittyItemsCollection: Capability<&KittyItems.Collection{NonFungibleToken.Provider}>
-    let marketCollection: &KittyItemsMarket.Collection
+    let itemsCollection: Capability<&AnyResource{NonFungibleToken.Provider}>
+    let marketCollection: &SampleMarket.Collection
 
     prepare(acct: AuthAccount) {
         // We need a provider capability, but one is not provided by default so we create one.
@@ -25,16 +25,17 @@ transaction(saleItemID: UInt64, saleItemPrice: UFix64, salePaymentTokenAddress: 
             acct.link<&KittyItems.Collection{NonFungibleToken.Provider}>(KittyItemsCollectionProviderPrivatePath, target: KittyItems.CollectionStoragePath)
         }
 
-        self.kittyItemsCollection = acct.getCapability<&KittyItems.Collection{NonFungibleToken.Provider}>(KittyItemsCollectionProviderPrivatePath)!
-        assert(self.kittyItemsCollection.borrow() != nil, message: "Missing or mis-typed KittyItemsCollection provider")
+        self.itemsCollection = acct.getCapability<&KittyItems.Collection{NonFungibleToken.Provider}>(KittyItemsCollectionProviderPrivatePath)!
+        assert(self.itemsCollection.borrow() != nil, message: "Missing or mis-typed KittyItemsCollection provider")
 
-        self.marketCollection = acct.borrow<&KittyItemsMarket.Collection>(from: KittyItemsMarket.CollectionStoragePath)
-            ?? panic("Missing or mis-typed KittyItemsMarket Collection")
+        self.marketCollection = acct.borrow<&SampleMarket.Collection>(from: SampleMarket.CollectionStoragePath)
+            ?? panic("Missing or mis-typed SampleMarket Collection")
     }
 
     execute {
-        let offer <- KittyItemsMarket.createSaleOffer (
-            sellerItemProvider: self.kittyItemsCollection,
+        let offer <- SampleMarket.createSaleOffer (
+            sellerItemProvider: self.itemsCollection,
+            saleItemTokenAddress: 0xKITTYITEMS,
             saleItemID: saleItemID,
             sellerPaymentReceiver: self.paymentTokenVault,
             salePrice: saleItemPrice,
