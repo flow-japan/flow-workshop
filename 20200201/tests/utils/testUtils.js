@@ -102,9 +102,7 @@ class TestUtils {
     });
   };
 
-  async sell({ seller, salePaymentTokenAddress }) {
-    const saleItemID = 0;
-    const saleItemPrice = '10.0'
+  async sell({ seller, saleItemTokenAddress, saleItemTokenName, saleItemID, salePaymentTokenAddress, salePaymentTokenName, saleItemPrice }) {
     const authorization = flow.authorize(seller);
     const transaction = fs
       .readFileSync(path.join(__dirname, `../../cadence/transactions/3_sell.cdc`), 'utf8')
@@ -117,9 +115,12 @@ class TestUtils {
       return await flow.sendTx({
       transaction,
       args: [
+        fcl.arg(saleItemTokenAddress, types.Address),
+        fcl.arg(saleItemTokenName, types.String),
         fcl.arg(Number(saleItemID), types.UInt64),
-        fcl.arg(String(saleItemPrice), types.UFix64),
-        fcl.arg(salePaymentTokenAddress, types.Address)
+        fcl.arg(salePaymentTokenAddress, types.Address),
+        fcl.arg(salePaymentTokenName, types.String),
+        fcl.arg(String(saleItemPrice), types.UFix64)
       ],
       proposer: authorization,
       authorizations: [authorization],
@@ -127,9 +128,8 @@ class TestUtils {
     });
   };
 
-  async buy({ buyer, seller }) {
-    const saleItemID = 0;
-    const marketCollectionAddress = seller.address;
+  async buy({ buyer, seller, saleItemTokenAddress, saleItemTokenName, saleItemID }) {
+    const marketCollectionAddress = `0x${seller.address}`;
     const authorization = flow.authorize(buyer);
     const transaction = fs
       .readFileSync(path.join(__dirname, `../../cadence/transactions/4_buy.cdc`), 'utf8')
@@ -142,8 +142,10 @@ class TestUtils {
     return await flow.sendTx({
       transaction,
       args: [
+        fcl.arg(saleItemTokenAddress, types.Address),
+        fcl.arg(saleItemTokenName, types.String),
         fcl.arg(Number(saleItemID), types.UInt64),
-        fcl.arg(`0x${marketCollectionAddress}`, types.Address)
+        fcl.arg(marketCollectionAddress, types.Address)
       ],
       proposer: authorization,
       authorizations: [authorization],

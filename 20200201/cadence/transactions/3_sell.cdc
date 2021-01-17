@@ -5,7 +5,14 @@ import FlowToken from 0xFLOWTOKEN
 import KittyItems from 0xKITTYITEMS
 import SampleMarket from 0xKITTYMARKET
 
-transaction(saleItemID: UInt64, saleItemPrice: UFix64, salePaymentTokenAddress: Address) {
+transaction(
+    saleItemTokenAddress: Address,
+    saleItemTokenName: String,
+    saleItemID: UInt64,
+    salePaymentTokenAddress: Address,
+    salePaymentTokenName: String,
+    saleItemPrice: UFix64
+) {
     let paymentTokenVault: Capability<&AnyResource{FungibleToken.Receiver}>
     let itemsCollection: Capability<&AnyResource{NonFungibleToken.Provider}>
     let marketCollection: &SampleMarket.Collection
@@ -34,12 +41,14 @@ transaction(saleItemID: UInt64, saleItemPrice: UFix64, salePaymentTokenAddress: 
 
     execute {
         let offer <- SampleMarket.createSaleOffer (
-            sellerItemProvider: self.itemsCollection,
-            saleItemTokenAddress: 0xKITTYITEMS,
+            saleItemTokenAddress: saleItemTokenAddress,
+            saleItemTokenName: saleItemTokenName,
             saleItemID: saleItemID,
-            sellerPaymentReceiver: self.paymentTokenVault,
+            sellerItemProvider: self.itemsCollection,
+            salePaymentTokenAddress: salePaymentTokenAddress,
+            salePaymentTokenName: salePaymentTokenName,
             salePrice: saleItemPrice,
-            salePaymentTokenAddress: salePaymentTokenAddress
+            sellerPaymentReceiver: self.paymentTokenVault
         )
         self.marketCollection.insert(offer: <-offer)
     }

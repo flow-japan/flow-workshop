@@ -28,9 +28,15 @@ describe('SampleMarket', async () => {
 
   describe('Sell', () => {
     it('should success', async () => {
-      const salePaymentTokenAddress = `0x${config.flowTokenAddress}`;
-      // const salePaymentTokenAddress = `0x${admin.address}`;
-      const res = await utils.sell({ seller, salePaymentTokenAddress });
+      const saleItemTokenAddress = `0x${deployer.account.address}`;
+      const saleItemTokenName = 'KittyItems';
+      const saleItemID = 0;
+      // const salePaymentTokenAddress = `0x${config.flowTokenAddress}`;
+      // const salePaymentTokenName = 'FlowToken';
+      const salePaymentTokenAddress = `0x${admin.address}`;
+      const salePaymentTokenName = 'Kibble';
+      const saleItemPrice = '10.0';
+      const res = await utils.sell({ seller, saleItemTokenAddress, saleItemTokenName, saleItemID, salePaymentTokenAddress, salePaymentTokenName, saleItemPrice });
       console.log(res.events);
       res.events.length.should.equal(2);
       res.events.some(e => e.type.includes('SaleOfferCreated')).should.be.true;
@@ -39,7 +45,10 @@ describe('SampleMarket', async () => {
 
     describe('Buy', () => {
       it('should success', async () => {
-        const res = await utils.buy({ buyer, seller });
+        const saleItemTokenAddress = `0x${deployer.account.address}`;
+        const saleItemTokenName = 'KittyItems';
+        const saleItemID = 0;
+        const res = await utils.buy({ buyer, seller, saleItemTokenAddress, saleItemTokenName, saleItemID });
         console.log(res.events);
         res.events.some(e => e.type.includes('TokensWithdrawn')).should.be.true;
         res.events.some(e => e.type.includes('TokensDeposited')).should.be.true;
