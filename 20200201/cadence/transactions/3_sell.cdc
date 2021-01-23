@@ -13,30 +13,32 @@ transaction(
     salePaymentTokenName: String,
     saleItemPrice: UFix64
 ) {
-    let paymentTokenVault: Capability<&AnyResource{FungibleToken.Receiver}>
-    let itemsCollection: Capability<&AnyResource{NonFungibleToken.Provider}>
-    let marketCollection: &SampleMarket.Collection
+    let market: &SampleMarket.Collection
+    let sellerPaymentReceiver: Capability<&AnyResource{FungibleToken.Receiver}>
+    let itemProvider: Capability<&AnyResource{NonFungibleToken.Provider}>
 
     prepare(acct: AuthAccount) {
-        // We need a provider capability, but one is not provided by default so we create one.
-        let KittyItemsCollectionProviderPrivatePath = /private/KittyItemsCollectionProvider
+        self.market = acct.borrow<&SampleMarket.Collection>(from: SampleMarket.CollectionStoragePath) ?? panic("Need the marketplace resouce")
 
-        if salePaymentTokenAddress == Address(0xKIBBLE) {
-            self.paymentTokenVault = acct.getCapability<&Kibble.Vault{FungibleToken.Receiver}>(Kibble.ReceiverPublicPath)!
+        if salePaymentTokenName == "Kibble" {
+            self.sellerPaymentReceiver = acct.getCapability<&Kibble.Vault{FungibleToken.Receiver}>(Kibble.ReceiverPublicPath)!
         } else {
-            self.paymentTokenVault = acct.getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver)!
-        }
-        assert(self.paymentTokenVault.borrow() != nil, message: "Missing or mis-typed receiver")
-
-        if !acct.getCapability<&KittyItems.Collection{NonFungibleToken.Provider}>(KittyItemsCollectionProviderPrivatePath)!.check() {
-            acct.link<&KittyItems.Collection{NonFungibleToken.Provider}>(KittyItemsCollectionProviderPrivatePath, target: KittyItems.CollectionStoragePath)
+            self.sellerPaymentReceiver = acct.getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver)!
         }
 
-        self.itemsCollection = acct.getCapability<&KittyItems.Collection{NonFungibleToken.Provider}>(KittyItemsCollectionProviderPrivatePath)!
-        assert(self.itemsCollection.borrow() != nil, message: "Missing or mis-typed KittyItemsCollection provider")
+        let providerPath = /private/KittyItemsCollectionProvider
+        acct.unlink(providerPath)
 
-        self.marketCollection = acct.borrow<&SampleMarket.Collection>(from: SampleMarket.CollectionStoragePath)
-            ?? panic("Missing or mis-typed SampleMarket Collection")
+        if !acct.getCapability<&KittyItems.Collection{NonFungibleToken.Provider}>(providerPath)!.check() {
+            acct.link<&KittyItems.Collection{NonFungibleToken.Provider}>(providerPath, target: KittyItems.CollectionStoragePath)
+        }
+
+        // if saleItemTokenName == "KittyItems" {
+            self.itemProvider = acct.getCapability<&KittyItems.Collection{NonFungibleToken.Provider}>(providerPath)!
+            assert(self.itemProvider.borrow() != nil, message: "Missing or mis-typed KittyItemsCollection provider")
+        // } else {
+        //   ...
+        // }
     }
 
     execute {
@@ -44,12 +46,13 @@ transaction(
             saleItemTokenAddress: saleItemTokenAddress,
             saleItemTokenName: saleItemTokenName,
             saleItemID: saleItemID,
-            sellerItemProvider: self.itemsCollection,
+            sellerItemProvider: self.itemProvider,
             salePaymentTokenAddress: salePaymentTokenAddress,
             salePaymentTokenName: salePaymentTokenName,
             salePrice: saleItemPrice,
-            sellerPaymentReceiver: self.paymentTokenVault
+            sellerPaymentReceiver: self.sellerPaymentReceiver
         )
-        self.marketCollection.insert(offer: <-offer)
+
+        self.market.insert(offer: <-offer)
     }
 }
