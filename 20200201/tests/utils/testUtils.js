@@ -47,7 +47,7 @@ class TestUtils {
   };
 
   async mintFT({ to }) {
-    const amount = '10.0';
+    const amount = '100.0';
     const authorization = flow.authorize(deployer.account);
     const transaction = fs
       .readFileSync(path.join(__dirname, `../../cadence/transactions/1_mint_ft.cdc`), 'utf8')
