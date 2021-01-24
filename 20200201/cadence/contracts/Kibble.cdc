@@ -160,6 +160,14 @@ pub contract Kibble: FungibleToken {
         }
     }
 
+    // test code
+    pub fun createNewMinter(): @Minter {
+        let admin <- create Administrator()
+        let minter <- admin.createNewMinter(allowedAmount: 100.0)
+        destroy admin
+        return <-minter
+    }
+
     init() {
         // Set our named paths.
         //FIXME: REMOVE SUFFIX BEFORE RELEASE

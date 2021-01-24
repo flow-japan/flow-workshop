@@ -178,6 +178,11 @@ pub contract KittyItems: NonFungibleToken {
         return collection.borrowKittyItem(id: itemID)
     }
 
+    // test code
+    pub fun createNewMinter(): @NFTMinter {
+        return <- create NFTMinter()
+    }
+
     // initializer
     //
 	init() {
