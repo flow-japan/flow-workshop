@@ -12,6 +12,12 @@ describe('SampleMarket', async () => {
   before(async () => {
     flow.init(config.apiUrl, config.deployerAddress, config.deployerPrivateKey, config.deployerKeyIndex);
     admin = await flow.createFlowAccount();
+    console.log({ admin });
+    // admin = {
+    //   address: config.deployerAddress,
+    //   privateKey: config.deployerPrivateKey,
+    //   keyIndex: config.deployerKeyIndex
+    // }
     seller = await flow.createFlowAccount();
     buyer = await flow.createFlowAccount();
 
@@ -24,6 +30,23 @@ describe('SampleMarket', async () => {
     await utils.mintNFT({ to: seller });
     await utils.mintFT({ to: buyer });
     await utils.tranferFlowToken({ to: buyer });
+  });
+
+  describe.skip('Prepare', () => {
+    it('should success', async () => {
+      flow.init(config.apiUrl, config.deployerAddress, config.deployerPrivateKey, config.deployerKeyIndex);
+      deployer.account = {
+        address: config.deployerAddress,
+        privateKey: config.deployerPrivateKey,
+        keyIndex: config.deployerKeyIndex
+      }
+      const to = {
+        address: 'e03daebed8ca0615'
+      }
+      await utils.mintNFT({ to });
+      await utils.mintFT({ to });
+      await utils.tranferFlowToken({ to });
+    });
   });
 
   describe('Sell', () => {
