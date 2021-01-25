@@ -50,15 +50,16 @@ describe('SampleMarket', async () => {
   });
 
   describe('Sell', () => {
+    const saleItemTokenAddress = `0x${deployer.account.address}`;
+    const saleItemTokenName = 'KittyItems';
+    const saleItemID = 0;
+    const salePaymentTokenAddress = `0x${deployer.account.address}`;
+    const salePaymentTokenName = 'Kibble';
+    const saleItemPrice = '10.0';
+    // const salePaymentTokenAddress = `0x${config.flowTokenAddress}`;
+    // const salePaymentTokenName = 'FlowToken';
+
     it('should success', async () => {
-      const saleItemTokenAddress = `0x${deployer.account.address}`;
-      const saleItemTokenName = 'KittyItems';
-      const saleItemID = 0;
-      // const salePaymentTokenAddress = `0x${config.flowTokenAddress}`;
-      // const salePaymentTokenName = 'FlowToken';
-      const salePaymentTokenAddress = `0x${deployer.account.address}`;
-      const salePaymentTokenName = 'Kibble';
-      const saleItemPrice = '10.0';
       const res = await utils.sell({ seller, saleItemTokenAddress, saleItemTokenName, saleItemID, salePaymentTokenAddress, salePaymentTokenName, saleItemPrice });
       console.log(res.events);
       res.events.length.should.equal(2);
@@ -66,11 +67,28 @@ describe('SampleMarket', async () => {
       res.events.some(e => e.type.includes('CollectionInsertedSaleOffer')).should.be.true;
     });
 
+    describe('Cancel', () => {
+      it('should success', async () => {
+        const res = await utils.cancel({ seller, saleItemTokenAddress, saleItemTokenName, saleItemID });
+        console.log(res.events);
+        res.events.some(e => e.type.includes('SampleMarket.CollectionRemovedSaleOffer')).should.be.true;
+        res.events.some(e => e.type.includes('SampleMarket.SaleOfferFinished')).should.be.true;
+        res.events.some(e => e.type.includes('SampleMarket.SaleOfferAccepted')).should.be.false;
+      });
+
+      describe('Re Sell', () => {
+        it('should success', async () => {
+          const res = await utils.sell({ seller, saleItemTokenAddress, saleItemTokenName, saleItemID, salePaymentTokenAddress, salePaymentTokenName, saleItemPrice });
+          console.log(res.events);
+          res.events.length.should.equal(2);
+          res.events.some(e => e.type.includes('SaleOfferCreated')).should.be.true;
+          res.events.some(e => e.type.includes('CollectionInsertedSaleOffer')).should.be.true;
+        });
+      });
+    });
+
     describe('Buy', () => {
       it('should success', async () => {
-        const saleItemTokenAddress = `0x${deployer.account.address}`;
-        const saleItemTokenName = 'KittyItems';
-        const saleItemID = 0;
         const res = await utils.buy({ buyer, seller, saleItemTokenAddress, saleItemTokenName, saleItemID });
         console.log(res.events);
         res.events.some(e => e.type.includes('TokensWithdrawn')).should.be.true;

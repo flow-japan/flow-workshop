@@ -112,7 +112,7 @@ class TestUtils {
       .replace(/0xKITTYITEMS/gi, `0x${deployer.account.address}`)
       .replace(/0xKITTYMARKET/gi, `0x${deployer.account.address}`)
       .replace(/0xFLOWTOKEN/gi, `0x${config.flowTokenAddress}`);
-      return await flow.sendTx({
+    return await flow.sendTx({
       transaction,
       args: [
         fcl.arg(saleItemTokenAddress, types.Address),
@@ -128,11 +128,29 @@ class TestUtils {
     });
   };
 
+  async cancel({ seller, saleItemTokenAddress, saleItemTokenName, saleItemID, salePaymentTokenAddress, salePaymentTokenName, saleItemPrice }) {
+    const authorization = flow.authorize(seller);
+    const transaction = fs
+      .readFileSync(path.join(__dirname, `../../cadence/transactions/4_cancel.cdc`), 'utf8')
+      .replace(/0xKITTYMARKET/gi, `0x${deployer.account.address}`)
+    return await flow.sendTx({
+      transaction,
+      args: [
+        fcl.arg(saleItemTokenAddress, types.Address),
+        fcl.arg(saleItemTokenName, types.String),
+        fcl.arg(Number(saleItemID), types.UInt64)
+      ],
+      proposer: authorization,
+      authorizations: [authorization],
+      payer: authorization
+    });
+  };
+
   async buy({ buyer, seller, saleItemTokenAddress, saleItemTokenName, saleItemID }) {
     const marketCollectionAddress = `0x${seller.address}`;
     const authorization = flow.authorize(buyer);
     const transaction = fs
-      .readFileSync(path.join(__dirname, `../../cadence/transactions/4_buy.cdc`), 'utf8')
+      .readFileSync(path.join(__dirname, `../../cadence/transactions/5_buy.cdc`), 'utf8')
       .replace(/0xFUNGIBLETOKENADDRESS/gi, `0x${config.fungibleTokenAddress}`)
       .replace(/0xNONFUNGIBLETOKEN/gi, `0x${deployer.account.address}`)
       .replace(/0xKIBBLE/gi, `0x${deployer.account.address}`)
