@@ -18,7 +18,7 @@ transaction(
     let itemProvider: Capability<&AnyResource{NonFungibleToken.Provider}>
 
     prepare(acct: AuthAccount) {
-        self.market = acct.borrow<&SampleMarket.Collection>(from: SampleMarket.CollectionStoragePath) ?? panic("Need the marketplace resouce")
+        self.market = acct.borrow<&SampleMarket.Collection>(from: SampleMarket.CollectionStoragePath) ?? panic("Need the marketplace resource")
 
         if salePaymentTokenName == "Kibble" {
             self.sellerPaymentReceiver = acct.getCapability<&Kibble.Vault{FungibleToken.Receiver}>(Kibble.ReceiverPublicPath)!

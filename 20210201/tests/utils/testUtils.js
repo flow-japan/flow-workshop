@@ -23,7 +23,7 @@ class TestUtils {
       authorizations: [authorization],
       payer: authorization
     });
-  };
+  }
 
   async mintNFT({ to }) {
     const typeID = 1;
@@ -44,7 +44,7 @@ class TestUtils {
       authorizations: [authorization],
       payer: authorization
     });
-  };
+  }
 
   async mintFT({ to }) {
     const amount = '100.0';
@@ -65,7 +65,7 @@ class TestUtils {
       authorizations: [authorization],
       payer: authorization
     });
-  };
+  }
 
   async tranferFlowToken({ to }) {
     const amount = '10.0';
@@ -100,7 +100,7 @@ class TestUtils {
       authorizations: [authorization],
       payer: authorization
     });
-  };
+  }
 
   async sell({ seller, saleItemTokenAddress, saleItemTokenName, saleItemID, salePaymentTokenAddress, salePaymentTokenName, saleItemPrice }) {
     const authorization = flow.authorize(seller);
@@ -126,9 +126,9 @@ class TestUtils {
       authorizations: [authorization],
       payer: authorization
     });
-  };
+  }
 
-  async cancel({ seller, saleItemTokenAddress, saleItemTokenName, saleItemID, salePaymentTokenAddress, salePaymentTokenName, saleItemPrice }) {
+  async cancel({ seller, saleItemTokenAddress, saleItemTokenName, saleItemID }) {
     const authorization = flow.authorize(seller);
     const transaction = fs
       .readFileSync(path.join(__dirname, `../../cadence/transactions/4_cancel.cdc`), 'utf8')
@@ -144,7 +144,7 @@ class TestUtils {
       authorizations: [authorization],
       payer: authorization
     });
-  };
+  }
 
   async buy({ buyer, seller, saleItemTokenAddress, saleItemTokenName, saleItemID }) {
     const marketCollectionAddress = `0x${seller.address}`;
@@ -169,7 +169,7 @@ class TestUtils {
       authorizations: [authorization],
       payer: authorization
     });
-  };
+  }
 }
 
 module.exports = new TestUtils();
