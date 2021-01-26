@@ -1,4 +1,4 @@
-import SampleMarket from 0xKITTYMARKET
+import SampleMarket from 0xSAMPLEMARKET
 
 transaction(
     saleItemTokenAddress: Address,

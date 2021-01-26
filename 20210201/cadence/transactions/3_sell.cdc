@@ -3,7 +3,7 @@ import NonFungibleToken from 0xNONFUNGIBLETOKEN
 import Kibble from 0xKIBBLE
 import FlowToken from 0xFLOWTOKEN
 import KittyItems from 0xKITTYITEMS
-import SampleMarket from 0xKITTYMARKET
+import SampleMarket from 0xSAMPLEMARKET
 
 transaction(
     saleItemTokenAddress: Address,

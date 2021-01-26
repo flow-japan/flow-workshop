@@ -15,7 +15,7 @@ class TestUtils {
       .replace(/0xNONFUNGIBLETOKEN/gi, `0x${deployer.account.address}`)
       .replace(/0xKIBBLE/gi, `0x${deployer.account.address}`)
       .replace(/0xKITTYITEMS/gi, `0x${deployer.account.address}`)
-      .replace(/0xKITTYMARKET/gi, `0x${deployer.account.address}`);
+      .replace(/0xSAMPLEMARKET/gi, `0x${deployer.account.address}`);
     return await flow.sendTx({
       transaction,
       args: [],
@@ -110,7 +110,7 @@ class TestUtils {
       .replace(/0xNONFUNGIBLETOKEN/gi, `0x${deployer.account.address}`)
       .replace(/0xKIBBLE/gi, `0x${deployer.account.address}`)
       .replace(/0xKITTYITEMS/gi, `0x${deployer.account.address}`)
-      .replace(/0xKITTYMARKET/gi, `0x${deployer.account.address}`)
+      .replace(/0xSAMPLEMARKET/gi, `0x${deployer.account.address}`)
       .replace(/0xFLOWTOKEN/gi, `0x${config.flowTokenAddress}`);
     return await flow.sendTx({
       transaction,
@@ -132,7 +132,7 @@ class TestUtils {
     const authorization = flow.authorize(seller);
     const transaction = fs
       .readFileSync(path.join(__dirname, `../../cadence/transactions/4_cancel.cdc`), 'utf8')
-      .replace(/0xKITTYMARKET/gi, `0x${deployer.account.address}`)
+      .replace(/0xSAMPLEMARKET/gi, `0x${deployer.account.address}`)
     return await flow.sendTx({
       transaction,
       args: [
@@ -155,7 +155,7 @@ class TestUtils {
       .replace(/0xNONFUNGIBLETOKEN/gi, `0x${deployer.account.address}`)
       .replace(/0xKIBBLE/gi, `0x${deployer.account.address}`)
       .replace(/0xKITTYITEMS/gi, `0x${deployer.account.address}`)
-      .replace(/0xKITTYMARKET/gi, `0x${deployer.account.address}`)
+      .replace(/0xSAMPLEMARKET/gi, `0x${deployer.account.address}`)
       .replace(/0xFLOWTOKEN/gi, `0x${config.flowTokenAddress}`);
     return await flow.sendTx({
       transaction,
