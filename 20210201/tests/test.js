@@ -4,20 +4,27 @@ const deployer = require('./services/deployer');
 const utils = require('./utils/testUtils');
 const config = require('./config');
 
-describe('SampleMarket', async () => {
+describe('SampleMarket', () => {
   let admin;
   let seller;
   let buyer;
 
+  let saleItemTokenAddress;
+  let saleItemTokenName;
+  let saleItemID;
+  let salePaymentTokenAddress;
+  let salePaymentTokenName;
+  let saleItemPrice;
+
   before(async () => {
     flow.init(config.apiUrl, config.deployerAddress, config.deployerPrivateKey, config.deployerKeyIndex);
     admin = await flow.createFlowAccount();
-    console.log({ admin });
     // admin = {
     //   address: config.deployerAddress,
     //   privateKey: config.deployerPrivateKey,
     //   keyIndex: config.deployerKeyIndex
     // }
+    console.log({ admin });
     seller = await flow.createFlowAccount();
     buyer = await flow.createFlowAccount();
 
@@ -32,32 +39,17 @@ describe('SampleMarket', async () => {
     await utils.tranferFlowToken({ to: buyer });
   });
 
-  describe.skip('Prepare', () => {
-    it('should success', async () => {
-      flow.init(config.apiUrl, config.deployerAddress, config.deployerPrivateKey, config.deployerKeyIndex);
-      deployer.account = {
-        address: config.deployerAddress,
-        privateKey: config.deployerPrivateKey,
-        keyIndex: config.deployerKeyIndex
-      }
-      const to = {
-        address: 'e03daebed8ca0615'
-      }
-      await utils.mintNFT({ to });
-      await utils.mintFT({ to });
-      await utils.tranferFlowToken({ to });
+  describe('Sell', function() {
+    before(() => {
+      saleItemTokenAddress = `0x${deployer.account.address}`;
+      saleItemTokenName = 'KittyItems';
+      saleItemID = 0;
+      salePaymentTokenAddress = `0x${deployer.account.address}`;
+      salePaymentTokenName = 'Kibble';
+      saleItemPrice = '10.0';
+      // salePaymentTokenAddress = `0x${config.flowTokenAddress}`;
+      // salePaymentTokenName = 'FlowToken';
     });
-  });
-
-  describe('Sell', () => {
-    const saleItemTokenAddress = `0x${deployer.account.address}`;
-    const saleItemTokenName = 'KittyItems';
-    const saleItemID = 0;
-    const salePaymentTokenAddress = `0x${deployer.account.address}`;
-    const salePaymentTokenName = 'Kibble';
-    const saleItemPrice = '10.0';
-    // const salePaymentTokenAddress = `0x${config.flowTokenAddress}`;
-    // const salePaymentTokenName = 'FlowToken';
 
     it('should success', async () => {
       const res = await utils.sell({ seller, saleItemTokenAddress, saleItemTokenName, saleItemID, salePaymentTokenAddress, salePaymentTokenName, saleItemPrice });
