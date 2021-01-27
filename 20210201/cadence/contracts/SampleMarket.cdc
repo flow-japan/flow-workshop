@@ -54,9 +54,11 @@ pub contract SampleMarket {
         pub var saleCompleted: Bool
         pub let id: UInt64
         pub let saleItemTokenAddress: Address
+        pub let saleItemTokenName: String
         pub let saleItemID: UInt64
         pub let salePrice: UFix64
         pub let salePaymentTokenAddress: Address
+        pub let salePaymentTokenName: String
     }
 
     // SaleOffer
@@ -346,8 +348,8 @@ pub contract SampleMarket {
 
     init () {
         //FIXME: REMOVE SUFFIX BEFORE RELEASE
-        self.CollectionStoragePath = /storage/SampleMarketCollection000
-        self.CollectionPublicPath = /public/SampleMarketCollection000
+        self.CollectionStoragePath = /storage/SampleMarketCollection002
+        self.CollectionPublicPath = /public/SampleMarketCollection002
 
         self.saleOfferCount = 0
     }
