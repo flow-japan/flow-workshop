@@ -2,7 +2,12 @@ import Knex from 'knex';
 
 const knex = Knex({
   client: 'postgresql',
-  connection: process.env.DATABASE_URL!,
+  connection: {
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+  },
   migrations: {
     directory: './src/modules/db/objection/migrations',
   },

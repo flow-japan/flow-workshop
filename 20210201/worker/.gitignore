@@ -1,6 +1,4 @@
-.idea/
 node_modules/
-.env
 gcpkey.json
 cloudSQLKey.json
 cloud_sql_proxy

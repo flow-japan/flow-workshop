@@ -41,7 +41,7 @@ test('save collection address', async () => {
 });
 
 test('find most recent sales.', async () => {
-  const result = await dbAccessor.findMostRecentSales();
+  const result = await dbAccessor.findMostRecentSales(20, 0);
   expect(result.length).toBeGreaterThan(0);
 });
 
@@ -82,4 +82,12 @@ test('find latest block cursor, if not create it.', async () => {
     'A.fcceff21d9532b58.KittyItemsMarket.CollectionInsertedSaleOffer',
   );
   expect(result).toBeDefined();
+});
+test('find create event logs', async () => {
+  const result = await dbAccessor.insertFlowEvent('event log sample', 20004134);
+  expect(result).toBeDefined();
+});
+test('find recent event logs', async () => {
+  const result = await dbAccessor.findRecentFlowEvents(10, 0);
+  expect(result.length).toBeGreaterThan(0);
 });

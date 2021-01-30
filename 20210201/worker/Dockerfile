@@ -7,5 +7,5 @@ ENV DB_USER kitty_user
 ENV DB_PASS kitty_password
 ENV DB_NAME kitty_items
 ENV DB_HOST host.docker.internal
-RUN ls
-CMD ["yarn","run","start"]
+ENV FLOW_NODE https://access-testnet.onflow.org
+CMD ["yarn","run","start:dev"]

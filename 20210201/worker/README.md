@@ -15,14 +15,18 @@ This API currently supports:
 npm install
 ```
 
-- Run docker:
+- Development with containered db
 
 ```
 docker-compose up -d
 ```
+- Development with cloud sql
+Save service account key at ./cloudSQLKey.json
 
-- Create a `.env` file based out of `.env.example`. Refer to `Creating a new Flow Account on Testnet` section below in order to
-  setup your private key for the `MINTER_PRIVATE_KEY` variable.
+execute
+```
+./cloud_sql_proxy -instances=flow-demo-302104:asia-northeast1:yugo-db=tcp:5432  -credential_file=cloudSQLKey.json
+```
 
 - Start app:
 

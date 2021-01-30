@@ -5,7 +5,7 @@ import Knex from 'knex';
 import { Model } from 'objection';
 import { BlockCursorDBModel } from './objection/models/blockCursorDBModel';
 import { PurchaseDBModel } from './objection/models/purchaseDBModel';
-
+import { FlowEventDBModel } from './objection/models/flowEventDBModel';
 class DBAccessor {
   init(): void {
     const knexInstance = Knex({
@@ -25,11 +25,15 @@ class DBAccessor {
   }
 
   //SaleOffer
-  findMostRecentSales(): Promise<SaleOfferDBModel[]> {
+  findMostRecentSales(
+    limit: number,
+    offset: number,
+  ): Promise<SaleOfferDBModel[]> {
     return SaleOfferDBModel.query()
       .orderBy('created_at', 'desc')
       .where('isFinished', false)
-      .limit(20);
+      .limit(limit)
+      .offset(offset);
   }
   getSaleOffer(saleOfferId: number): Promise<SaleOfferDBModel> {
     return SaleOfferDBModel.query().findById([saleOfferId]);
@@ -161,15 +165,38 @@ class DBAccessor {
   findResentPurchases(
     itemId: number,
     tokenAddress: string,
+    limit: number,
+    offset: number,
   ): Promise<PurchaseDBModel[]> {
     return PurchaseDBModel.query()
       .orderBy('created_at', 'desc')
       .where('tokenId', itemId)
       .where('tokenAddress', tokenAddress)
-      .limit(20);
+      .limit(limit)
+      .offset(offset);
+  }
+
+  //Flow Event
+  insertFlowEvent(
+    rawEvent: string,
+    blockHeight: number,
+  ): Promise<FlowEventDBModel> {
+    return FlowEventDBModel.query().insertAndFetch({
+      raw_event: rawEvent,
+      block_height: blockHeight,
+    });
+  }
+
+  findRecentFlowEvents(
+    limit: number,
+    offset: number,
+  ): Promise<FlowEventDBModel[]> {
+    return FlowEventDBModel.query()
+      .orderBy('created_at', 'desc')
+      .limit(limit)
+      .offset(offset);
   }
 }
-
 const dbAccessor = new DBAccessor();
 
 export { dbAccessor, DBAccessor };
