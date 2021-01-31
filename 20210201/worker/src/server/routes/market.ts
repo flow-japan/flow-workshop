@@ -25,9 +25,9 @@ function initMarketRouter(dbAccessor: DBAccessor): Router {
     const offset: number =
       typeof req.query.offset === 'string' ? parseInt(req.query.offset) : 0;
 
-    const latestEvents = await dbAccessor.findMostRecentSales(limit, offset);
+    const latestEvents = await dbAccessor.findRecentFlowEvents(limit, offset);
     res.send({
-      latestSaleOffers,
+      latestEvents,
     });
     return;
   });

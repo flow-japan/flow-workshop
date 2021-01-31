@@ -37,9 +37,11 @@ export async function run() {
     ? blockCursorDBModel.id
     : undefined;
   await dbAccessor.upsertBlockCursor(cursorId, range.end, TOKEN_NAME);
-  if(latestHeight!==range.end){
-    console.log("continue")
-    await run()}
+
+  if (latestHeight !== range.end) {
+    console.log('continue');
+    await run();
+  }
   return events;
 }
 

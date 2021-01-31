@@ -1,4 +1,4 @@
-import { DBAccessor } from '../modules/db/dbAccessor';
+import { dbAccessor, DBAccessor } from '../modules/db/dbAccessor';
 import * as t from '../types';
 
 type EventsByTransactions = {
@@ -64,6 +64,10 @@ class EventRecorder {
             '',
           );
         }
+        await dbAccessor.insertFlowEvent(
+          JSON.stringify(anEvent),
+          anEvent.blockHeight,
+        );
       }
     }
 
