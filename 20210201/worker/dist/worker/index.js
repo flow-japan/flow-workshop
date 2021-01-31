@@ -49,7 +49,6 @@ async function run() {
         return;
     }
     const events = await flowService.getMultipleEvents(eventNames, range);
-    console.log(events);
     await eventRecorder.process(events);
     const cursorId = blockCursorDBModel
         ? blockCursorDBModel.id

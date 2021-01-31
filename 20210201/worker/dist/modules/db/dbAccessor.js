@@ -38,13 +38,16 @@ class DBAccessor {
     getSaleOffer(saleOfferId) {
         return saleOfferDBModel_1.SaleOfferDBModel.query().findById([saleOfferId]);
     }
-    insertSaleOffer(tokenId, saleOfferId, tokenAddress, marketAddress, price) {
+    insertSaleOffer(tokenId, tokenName, saleOfferId, tokenAddress, paymentTokenAddress, paymentTokenName, marketAddress, price) {
         return saleOfferDBModel_1.SaleOfferDBModel.query().upsertGraphAndFetch([
             {
                 tokens: {
                     id: tokenId,
                     tokenAddress: tokenAddress,
                 },
+                tokenName: tokenName,
+                paymentTokenAddress: paymentTokenAddress,
+                paymentTokenName: paymentTokenName,
                 saleOfferId: saleOfferId,
                 price: price,
                 marketAddress: marketAddress,
@@ -58,12 +61,6 @@ class DBAccessor {
     finishSaleOffer(saleOfferId) {
         return saleOfferDBModel_1.SaleOfferDBModel.query().updateAndFetchById([saleOfferId], {
             isFinished: true,
-        });
-    }
-    updateSellerAndCollectionAddressInSaleOffer(saleOfferId, collectionAddress) {
-        return saleOfferDBModel_1.SaleOfferDBModel.query().updateAndFetchById([saleOfferId], {
-            collectionAddress: collectionAddress,
-            sellerAddress: collectionAddress,
         });
     }
     updateCollectionAddressInSaleOffer(saleOfferId, collectionAddress) {

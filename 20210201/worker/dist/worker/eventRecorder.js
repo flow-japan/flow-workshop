@@ -14,13 +14,13 @@ class EventRecorder {
             for (const anEvent of sortedEvents) {
                 if (isCreatedEvent(anEvent)) {
                     const data = anEvent.data;
-                    await this.db.insertSaleOffer(data.itemID, data.id, data.itemTokenAddress, 'kitty_market', data.price);
+                    await this.db.insertSaleOffer(data.itemID, data.itemTokenName, data.id, data.itemTokenAddress, data.paymentTokenAddress, data.paymentTokenName, 'kitty_market', data.price);
                 }
                 if (isAcceptedEvent(anEvent)) {
                     const data = anEvent.data;
                     const saleOffer = await this.db.getSaleOffer(data.id);
                     //add sellerAddress
-                    await this.db.insertNewPurchase(data.id, data.itemID, saleOffer.tokenAdderss, 'buyer_address', saleOffer.collectionAddress, anEvent.transactionId, anEvent.blockHeight, saleOffer.price);
+                    await this.db.insertNewPurchase(data.id, data.itemID, saleOffer.tokenAddress, 'buyer_address', saleOffer.collectionAddress, anEvent.transactionId, anEvent.blockHeight, saleOffer.price);
                 }
                 if (isFinishedEvent(anEvent)) {
                     const data = anEvent.data;

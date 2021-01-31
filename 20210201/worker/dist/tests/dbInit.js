@@ -28,6 +28,7 @@ function migrate() {
 }
 Promise.all([
     dropTable('tokens'),
+    dropTable('flow_events'),
     dropTable('block_cursor'),
     dropTable('knex_migrations'),
     dropTable('knex_migrations_lock'),

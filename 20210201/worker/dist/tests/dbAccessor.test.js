@@ -17,17 +17,17 @@ test('get token info', async () => {
     expect(result.ownerAddress).toEqual('0xfcceff21d9532b58');
 });
 test('save new sale offer', async () => {
-    const result = await dbAccessor_1.dbAccessor.insertSaleOffer(320, 1005, 'kitty_items', '0xfcceff21d9532b58', '100');
+    const result = await dbAccessor_1.dbAccessor.insertSaleOffer(320, 'test_token_name', 1005, 'kitty_items', '0x3r984q8flfjak', 'kibble', '0xfcceff21d9532b58', '100');
     expect(result).toBeDefined();
 });
 test('get sale offer', async () => {
     const result = await dbAccessor_1.dbAccessor.getSaleOffer(1005);
     expect(result.tokenId).toEqual(320);
+    expect(result.paymentTokenName).toEqual('kibble');
 });
 test('save collection address', async () => {
-    const result = await dbAccessor_1.dbAccessor.updateSellerAndCollectionAddressInSaleOffer(1005, 'test_address');
+    const result = await dbAccessor_1.dbAccessor.updateCollectionAddressInSaleOffer(1005, 'test_address');
     expect(result.collectionAddress).toEqual('test_address');
-    expect(result.sellerAddress).toEqual('test_address');
 });
 test('find most recent sales.', async () => {
     const result = await dbAccessor_1.dbAccessor.findMostRecentSales(20, 0);

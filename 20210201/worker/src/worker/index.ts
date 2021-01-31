@@ -31,7 +31,6 @@ export async function run() {
   }
 
   const events = await flowService.getMultipleEvents(eventNames, range);
-  console.log(events);
   await eventRecorder.process(events);
   const cursorId: string | undefined = blockCursorDBModel
     ? blockCursorDBModel.id
