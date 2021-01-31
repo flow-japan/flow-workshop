@@ -21,8 +21,11 @@ class EventRecorder {
           const data = anEvent.data as t.SaleOfferCreatedEventData;
           await this.db.insertSaleOffer(
             data.itemID,
+            data.itemTokenName,
             data.id,
             data.itemTokenAddress,
+            data.paymentTokenAddress,
+            data.paymentTokenName,
             'kitty_market',
             data.price,
           );
@@ -35,7 +38,7 @@ class EventRecorder {
           await this.db.insertNewPurchase(
             data.id,
             data.itemID,
-            saleOffer.tokenAdderss,
+            saleOffer.tokenAddress,
             'buyer_address',
             saleOffer.collectionAddress,
             anEvent.transactionId,

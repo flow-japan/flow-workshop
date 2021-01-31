@@ -5,13 +5,15 @@ export class SaleOfferDBModel extends BaseModel {
   tokenId!: string;
   saleOfferId!: number;
   price!: string;
-  sellerAddress?: string;
   collectionAddress?: string;
   txHash?: string;
   isFinished!: boolean;
   marketAddress!: string;
-  tokenAdderss!: string;
+  tokenAddress!: string;
   tokens?: TokensDBModel;
+  tokenName?: string;
+  paymentTokenAddress?: string;
+  paymentTokenName?: string;
 
   static get tableName(): string {
     return 'sale_offers';

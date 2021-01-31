@@ -30,7 +30,7 @@ test('save collection address', async () => {
     expect(result.sellerAddress).toEqual('test_address');
 });
 test('find most recent sales.', async () => {
-    const result = await dbAccessor_1.dbAccessor.findMostRecentSales();
+    const result = await dbAccessor_1.dbAccessor.findMostRecentSales(20, 0);
     expect(result.length).toBeGreaterThan(0);
 });
 test('delete collection address', async () => {
@@ -52,4 +52,12 @@ test('Update blockCursorById', async () => {
 test('find latest block cursor, if not create it.', async () => {
     const result = await dbAccessor_1.dbAccessor.findLatestBlockCursor('A.fcceff21d9532b58.KittyItemsMarket.CollectionInsertedSaleOffer');
     expect(result).toBeDefined();
+});
+test('find create event logs', async () => {
+    const result = await dbAccessor_1.dbAccessor.insertFlowEvent('event log sample', 20004134);
+    expect(result).toBeDefined();
+});
+test('find recent event logs', async () => {
+    const result = await dbAccessor_1.dbAccessor.findRecentFlowEvents(10, 0);
+    expect(result.length).toBeGreaterThan(0);
 });

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventRecorder = void 0;
+const dbAccessor_1 = require("../modules/db/dbAccessor");
 class EventRecorder {
     constructor(db) {
         this.db = db;
@@ -33,6 +34,7 @@ class EventRecorder {
                     const data = anEvent.data;
                     await this.db.updateCollectionAddressInSaleOffer(data.saleOfferId, '');
                 }
+                await dbAccessor_1.dbAccessor.insertFlowEvent(JSON.stringify(anEvent), anEvent.blockHeight);
             }
         }
         function sortByHeight(events) {

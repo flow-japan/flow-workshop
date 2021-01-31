@@ -10,6 +10,7 @@ const knex_1 = __importDefault(require("knex"));
 const objection_1 = require("objection");
 const blockCursorDBModel_1 = require("./objection/models/blockCursorDBModel");
 const purchaseDBModel_1 = require("./objection/models/purchaseDBModel");
+const flowEventDBModel_1 = require("./objection/models/flowEventDBModel");
 class DBAccessor {
     init() {
         const knexInstance = knex_1.default({
@@ -27,11 +28,12 @@ class DBAccessor {
         objection_1.Model.knex(knexInstance);
     }
     //SaleOffer
-    findMostRecentSales() {
+    findMostRecentSales(limit, offset) {
         return saleOfferDBModel_1.SaleOfferDBModel.query()
             .orderBy('created_at', 'desc')
             .where('isFinished', false)
-            .limit(20);
+            .limit(limit)
+            .offset(offset);
     }
     getSaleOffer(saleOfferId) {
         return saleOfferDBModel_1.SaleOfferDBModel.query().findById([saleOfferId]);
@@ -119,12 +121,26 @@ class DBAccessor {
     findPurchaseById(saleOfferId) {
         return purchaseDBModel_1.PurchaseDBModel.query().findById([saleOfferId]);
     }
-    findResentPurchases(itemId, tokenAddress) {
+    findResentPurchases(itemId, tokenAddress, limit, offset) {
         return purchaseDBModel_1.PurchaseDBModel.query()
             .orderBy('created_at', 'desc')
             .where('tokenId', itemId)
             .where('tokenAddress', tokenAddress)
-            .limit(20);
+            .limit(limit)
+            .offset(offset);
+    }
+    //Flow Event
+    insertFlowEvent(rawEvent, blockHeight) {
+        return flowEventDBModel_1.FlowEventDBModel.query().insertAndFetch({
+            raw_event: rawEvent,
+            block_height: blockHeight,
+        });
+    }
+    findRecentFlowEvents(limit, offset) {
+        return flowEventDBModel_1.FlowEventDBModel.query()
+            .orderBy('created_at', 'desc')
+            .limit(limit)
+            .offset(offset);
     }
 }
 exports.DBAccessor = DBAccessor;

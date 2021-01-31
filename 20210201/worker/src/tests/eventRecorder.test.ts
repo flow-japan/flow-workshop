@@ -40,6 +40,7 @@ test('Create Event', async () => {
   ]);
   const saleOffer = await dbAccessor.getSaleOffer(SALE_OFFER_ID);
   expect(saleOffer).toBeDefined();
+  expect(saleOffer.paymentTokenName).toEqual('Kibble');
 });
 
 test('Accepted Event', async () => {

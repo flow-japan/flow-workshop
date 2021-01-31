@@ -55,8 +55,7 @@ In order to create an account on Testnet to deploy the smart contracts and mint 
 npm run migrate:make
 ```
 
-Migrations are run automatically when the app initializes
-
+Migrations are run automatically when the app
 
 
 ### GCP SETTING

@@ -41,8 +41,11 @@ class DBAccessor {
 
   insertSaleOffer(
     tokenId: number,
+    tokenName: string,
     saleOfferId: number,
     tokenAddress: string,
+    paymentTokenAddress: string,
+    paymentTokenName: string,
     marketAddress: string,
     price: string,
   ): Promise<SaleOfferDBModel[]> {
@@ -53,6 +56,9 @@ class DBAccessor {
             id: tokenId,
             tokenAddress: tokenAddress,
           },
+          tokenName: tokenName,
+          paymentTokenAddress: paymentTokenAddress,
+          paymentTokenName: paymentTokenName,
           saleOfferId: saleOfferId,
           price: price,
           marketAddress: marketAddress,
@@ -68,15 +74,6 @@ class DBAccessor {
   finishSaleOffer(saleOfferId: number): Promise<SaleOfferDBModel> {
     return SaleOfferDBModel.query().updateAndFetchById([saleOfferId], {
       isFinished: true,
-    });
-  }
-  updateSellerAndCollectionAddressInSaleOffer(
-    saleOfferId: number,
-    collectionAddress: string,
-  ): Promise<SaleOfferDBModel> {
-    return SaleOfferDBModel.query().updateAndFetchById([saleOfferId], {
-      collectionAddress: collectionAddress,
-      sellerAddress: collectionAddress,
     });
   }
   updateCollectionAddressInSaleOffer(
