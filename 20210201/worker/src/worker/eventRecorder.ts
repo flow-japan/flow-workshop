@@ -1,4 +1,4 @@
-import { dbAccessor, DBAccessor } from '../modules/db/dbAccessor';
+import { dbAccessor } from '../modules/db/dbAccessor';
 import * as t from '../types';
 
 type EventsByTransactions = {
