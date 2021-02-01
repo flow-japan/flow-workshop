@@ -1,5 +1,5 @@
-import { EventRecorder } from '../worker/eventRecorder';
-import * as fcl from '@onflow/fcl';
+import { EventRecorder } from '../controller/eventProcessor/eventRecorder';
+import * as fcl from '../controller/node_modules/@onflow/fcl';
 import { BlockRange } from '../valueObjects';
 import { dbAccessor } from '../modules/db/dbAccessor';
 

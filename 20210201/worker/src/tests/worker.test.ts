@@ -1,4 +1,4 @@
-import { run } from '../worker';
+import { run } from '../controller/eventProcessor/eventFetcher';
 
 test('worker can run', async () => {
   const result = await run();

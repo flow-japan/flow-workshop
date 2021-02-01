@@ -1,12 +1,12 @@
 import express, { Request, Response, Router } from 'express';
-import { run } from '../../worker';
+import { eventProcessor } from '../../controller/eventProcessor';
 
 function initEventMonitorRouter(): Router {
   const router = express.Router();
   console.log('event start');
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   router.get('/eventMonitor', async (req: Request, res: Response) => {
-    const result = await run();
+    const result = await eventProcessor();
     return res.send(result);
   });
 

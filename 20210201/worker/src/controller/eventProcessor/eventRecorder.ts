@@ -1,5 +1,5 @@
-import { dbAccessor } from '../modules/db/dbAccessor';
-import * as t from '../types';
+import { dbAccessor } from '../../modules/db/dbAccessor';
+import * as t from '../../types';
 
 type EventsByTransactions = {
   [x: string]: t.Event[];

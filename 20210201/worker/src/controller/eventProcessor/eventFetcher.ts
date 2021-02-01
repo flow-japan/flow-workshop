@@ -1,9 +1,8 @@
-import * as fcl from '@onflow/fcl';
-import { FlowService } from '../modules/flow/flow';
-import { dbAccessor } from '../modules/db/dbAccessor';
-import { RangeToFetchEvents } from '../valueObjects';
-import { eventRecorder } from './eventRecorder';
-import * as t from '../types';
+import { flowService } from '../../modules/flow/flow';
+import { dbAccessor } from '../../modules/db/dbAccessor';
+import { RangeSettingsToFetchEvents } from '../../valueObjects';
+
+import * as t from '../../types';
 //constants
 const eventNames = [
   'A.fc40912427c789d2.SampleMarket.SaleOfferCreated',
@@ -12,22 +11,15 @@ const eventNames = [
   'A.fc40912427c789d2.SampleMarket.CollectionInsertedSaleOffer',
   'A.fc40912427c789d2.SampleMarket.CollectionRemovedSaleOffer',
 ];
-const TOKEN_NAME = 'kitty_items';
 
-fcl.config().put('accessNode.api', process.env.FLOW_NODE);
-const flowService = new FlowService();
 dbAccessor.init();
 
-export async function run() {
-  const latestHeight = await flowService.getLatestBlockHeight();
-  const {
-    id: cursorId,
-    current_block_height: cursorHeight,
-  } = await dbAccessor.findLatestBlockCursor(TOKEN_NAME);
-  const range = new RangeToFetchEvents(latestHeight, cursorHeight);
-  console.log(range);
+export async function eventFetcher(
+  range: RangeSettingsToFetchEvents,
+): Promise<t.Event[] | []> {
   if (range.diff < 10) {
-    return `skipped ${range.diff} blocks difference`;
+    console.log(`skipped ${range.diff} blocks difference`);
+    return [];
   }
 
   const events: t.Event[] = await flowService.getMultipleEvents(
@@ -37,19 +29,7 @@ export async function run() {
 
   const eventsByTransactions = groupByTransactionId(events);
 
-  for (const events of eventsByTransactions) {
-    for (const event of sortByEventIndex(events)) {
-      await eventRecorder(event);
-    }
-  }
-
-  await dbAccessor.upsertBlockCursor(cursorId, range.end, TOKEN_NAME);
-
-  if (range.isLast) {
-    return `fetched from ${range.start} to ${range.end}`;
-  }
-  console.log('continue');
-  await run();
+  return eventsByTransactions.flat();
 }
 
 function sortByEventIndex(events: t.Event[]): t.Event[] {
@@ -68,6 +48,9 @@ function groupByTransactionId(events: t.Event[]): t.Event[][] {
       result[x.transactionId] = [x, ...result[x.transactionId]];
     }
   });
+  for (const key in result) {
+    result[key] = sortByEventIndex(result[key]);
+  }
   return Object.values(result);
 }
 
