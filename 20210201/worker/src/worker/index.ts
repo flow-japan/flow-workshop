@@ -2,7 +2,7 @@ import * as fcl from '@onflow/fcl';
 import { FlowService } from '../modules/flow/flow';
 import { dbAccessor } from '../modules/db/dbAccessor';
 import { BlockRange } from '../valueObjects';
-import { EventRecorder } from './eventRecorder';
+import { eventRecorder } from './eventRecorder';
 
 //constants
 const eventNames = [
@@ -17,24 +17,24 @@ const TOKEN_NAME = 'kitty_items';
 fcl.config().put('accessNode.api', process.env.FLOW_NODE);
 const flowService = new FlowService();
 dbAccessor.init();
-const eventRecorder = new EventRecorder(dbAccessor);
 
 export async function run() {
   const latestHeight = await flowService.getLatestBlockHeight();
-  const blockCursorDBModel = await dbAccessor.findLatestBlockCursor(TOKEN_NAME);
-  const cursorHeight = blockCursorDBModel
-    ? blockCursorDBModel.current_block_height
-    : 0;
+
+  const {
+    id: cursorId,
+    current_block_height: cursorHeight,
+  } = await dbAccessor.findLatestBlockCursor(TOKEN_NAME);
+
   const range = calculateBlockRange(latestHeight, cursorHeight);
   if (range.diff < 50) {
     return;
   }
 
   const events = await flowService.getMultipleEvents(eventNames, range);
+
   await eventRecorder.process(events);
-  const cursorId: string | undefined = blockCursorDBModel
-    ? blockCursorDBModel.id
-    : undefined;
+
   await dbAccessor.upsertBlockCursor(cursorId, range.end, TOKEN_NAME);
 
   if (latestHeight !== range.end) {
