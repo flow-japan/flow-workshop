@@ -5,80 +5,63 @@ type EventsByTransactions = {
   [x: string]: t.Event[];
 };
 
-async function eventRecorder(events: t.Event[]): Promise<void> {
-  dbAccessor.init();
-
-  const eventsByTransactions = groupByTransactionId(events);
-
-  for (const events of eventsByTransactions) {
-    const sortedEvents = sortByEventIndex(events);
-
-    for (const anEvent of sortedEvents) {
-      if (isCreatedEvent(anEvent)) {
-        const data = anEvent.data as t.SaleOfferCreatedEventData;
-        await dbAccessor.insertSaleOffer(
-          data.itemID,
-          data.itemTokenName,
-          data.id,
-          data.itemTokenAddress,
-          data.paymentTokenAddress,
-          data.paymentTokenName,
-          'kitty_market',
-          data.price,
-        );
-      }
-
-      if (isAcceptedEvent(anEvent)) {
-        const data = anEvent.data as t.SaleOfferAcceptedEventData;
-        const saleOffer = await dbAccessor.getSaleOffer(data.id);
-        //add sellerAddress
-        await dbAccessor.insertNewPurchase(
-          data.id,
-          data.itemID,
-          saleOffer.tokenAddress,
-          'buyer_address',
-          saleOffer.collectionAddress,
-          anEvent.transactionId,
-          anEvent.blockHeight,
-          saleOffer.price,
-        );
-      }
-
-      if (isFinishedEvent(anEvent)) {
-        const data = anEvent.data as t.SaleOfferFinishedEventData;
-        await dbAccessor.finishSaleOffer(data.id);
-      }
-
-      if (isCollectionInsertedEvent(anEvent)) {
-        const data = anEvent.data as t.CollectionInsertedSaleOffer;
-        await dbAccessor.updateCollectionAddressInSaleOffer(
-          data.saleOfferId,
-          data.saleItemCollection,
-        );
-      }
-
-      if (isCollectionRemovedEvent(anEvent)) {
-        const data = anEvent.data as t.CollectionInsertedSaleOffer;
-        await dbAccessor.updateCollectionAddressInSaleOffer(
-          data.saleOfferId,
-          '',
-        );
-      }
-      await dbAccessor.insertFlowEvent(
-        JSON.stringify(anEvent),
-        anEvent.blockHeight,
-      );
-    }
+async function eventRecorder(event: t.Event): Promise<void> {
+  if (isCreatedEvent(event)) {
+    const data = event.data as t.SaleOfferCreatedEventData;
+    await dbAccessor.insertSaleOffer(
+      data.itemID,
+      data.itemTokenName,
+      data.id,
+      data.itemTokenAddress,
+      data.paymentTokenAddress,
+      data.paymentTokenName,
+      'kitty_market',
+      data.price,
+    );
   }
-}
-function sortByHeight(events: t.Event[]): t.Event[] {
-  return events.sort((a, b) => a.blockHeight - b.blockHeight);
+
+  if (isAcceptedEvent(event)) {
+    const data = event.data as t.SaleOfferAcceptedEventData;
+    const saleOffer = await dbAccessor.getSaleOffer(data.id);
+    //add sellerAddress
+    await dbAccessor.insertNewPurchase(
+      data.id,
+      data.itemID,
+      saleOffer.tokenAddress,
+      'buyer_address',
+      saleOffer.collectionAddress,
+      event.transactionId,
+      event.blockHeight,
+      saleOffer.price,
+    );
+  }
+
+  if (isFinishedEvent(event)) {
+    const data = event.data as t.SaleOfferFinishedEventData;
+    await dbAccessor.finishSaleOffer(data.id);
+  }
+
+  if (isCollectionInsertedEvent(event)) {
+    const data = event.data as t.CollectionInsertedSaleOffer;
+    await dbAccessor.updateCollectionAddressInSaleOffer(
+      data.saleOfferId,
+      data.saleItemCollection,
+    );
+  }
+
+  if (isCollectionRemovedEvent(event)) {
+    const data = event.data as t.CollectionInsertedSaleOffer;
+    await dbAccessor.updateCollectionAddressInSaleOffer(data.saleOfferId, '');
+  }
+  await dbAccessor.insertFlowEvent(JSON.stringify(event), event.blockHeight);
 }
 
 function sortByEventIndex(events: t.Event[]): t.Event[] {
   return events.sort((a, b) => a.eventIndex - b.eventIndex);
 }
-
+function sortByHeight(events: t.Event[]): t.Event[] {
+  return events.sort((a, b) => a.blockHeight - b.blockHeight);
+}
 function groupByTransactionId(events: t.Event[]): t.Event[][] {
   const sortedEvents = sortByHeight(events);
   const result = {} as EventsByTransactions;

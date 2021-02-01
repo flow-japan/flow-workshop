@@ -2,7 +2,7 @@ import * as fcl from '@onflow/fcl';
 import { latestBlock } from '@onflow/sdk-latest-block';
 import { send } from '@onflow/sdk-send';
 import { getEvents } from '@onflow/sdk-build-get-events';
-import { BlockRange } from '../../valueObjects';
+import { RangeToFetchEvents } from '../../valueObjects';
 
 class FlowService {
   getAccount = async (addr: string) => {
@@ -15,7 +15,7 @@ class FlowService {
     return blockHeight.height as number;
   }
 
-  async getSingleEvent(eventName: string, range: BlockRange) {
+  async getSingleEvent(eventName: string, range: RangeToFetchEvents) {
     try {
       const rawResult = await send([
         getEvents(eventName, range.start, range.end),
@@ -34,7 +34,7 @@ class FlowService {
     }
   }
 
-  async getMultipleEvents(eventNames: string[], range: BlockRange) {
+  async getMultipleEvents(eventNames: string[], range: RangeToFetchEvents) {
     const events = await Promise.all(
       eventNames.map((name) => this.getSingleEvent(name, range)),
     );

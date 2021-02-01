@@ -1,5 +1,14 @@
-export class BlockRange {
-  constructor(private readonly _start: number, private readonly _end: number) {
+export class RangeToFetchEvents {
+  private _start: number;
+  private _end: number;
+  constructor(
+    private readonly _latestHeight: number,
+    private readonly _lastHeight: number,
+  ) {
+    this._start = _lastHeight === 0 ? _latestHeight - 1000 : _lastHeight;
+    this._end =
+      _lastHeight + 1000 > _latestHeight ? _latestHeight : _lastHeight + 1000;
+
     if (this._start >= this._end) {
       console.error('start height is bigger than /equal to end height');
     }
@@ -13,6 +22,9 @@ export class BlockRange {
   get diff(): number {
     return this._end - this._start;
   }
+  get isLast(): boolean {
+    return this._end === this._latestHeight;
+  }
 }
 
 class Event {
@@ -20,7 +32,7 @@ class Event {
     private readonly _type: string,
     private readonly _transactionId: string,
     private readonly _blockHeight: number,
-  ) {}
+  ) { }
   get type(): string {
     return this._type;
   }
@@ -68,8 +80,8 @@ export class CollectionInsertedSaleOfferEvent extends Event {
   }
 }
 
-export class SaleOfferAcceptedEvent extends Event {}
-export class SaleOfferFinishedEvent extends Event {}
+export class SaleOfferAcceptedEvent extends Event { }
+export class SaleOfferFinishedEvent extends Event { }
 
 export type SupportedEvents =
   | SaleOfferFinishedEvent
@@ -80,7 +92,7 @@ export default class Token {
     private readonly _id: number,
     private readonly _ownerAddress: string,
     private readonly _tokenAddress: string,
-  ) {}
+  ) { }
 
   get id(): number {
     return this._id;
