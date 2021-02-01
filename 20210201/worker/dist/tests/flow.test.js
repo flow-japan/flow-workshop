@@ -30,12 +30,12 @@ test('get latest block number', async () => {
     expect(height).toBeGreaterThan(1);
 });
 test('can find an event in block range', async () => {
-    const range = new valueObjects_1.BlockRange(20078500, 20079500);
+    const range = new valueObjects_1.RangeSettingsToFetchEvents(20078500, 20079500, 'CURSOR_ID');
     const result = await flowService.getSingleEvent('A.fcceff21d9532b58.KittyItemsMarket.SaleOfferCreated', range);
     expect(result[0].data.itemID).toEqual(81);
 });
 test('can find events in block range', async () => {
-    const range = new valueObjects_1.BlockRange(21570315, 21570322);
+    const range = new valueObjects_1.RangeSettingsToFetchEvents(21570315, 21570322, 'CURSOR_ID');
     const result = await flowService.getMultipleEvents([
         'A.fc40912427c789d2.SampleMarket.SaleOfferCreated',
         'A.fc40912427c789d2.SampleMarket.SaleOfferAccepted',

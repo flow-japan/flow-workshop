@@ -21,7 +21,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.KibblesService = void 0;
 const t = __importStar(require("@onflow/types"));
-const fcl = __importStar(require("../../worker/node_modules/@onflow/fcl"));
+const fcl = __importStar(require("@onflow/fcl"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 class KibblesService {

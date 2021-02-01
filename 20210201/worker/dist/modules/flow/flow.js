@@ -20,17 +20,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.flowService = exports.FlowService = void 0;
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 const fcl = __importStar(require("@onflow/fcl"));
 const sdk_latest_block_1 = require("@onflow/sdk-latest-block");
 const sdk_send_1 = require("@onflow/sdk-send");
 const sdk_build_get_events_1 = require("@onflow/sdk-build-get-events");
 class FlowService {
-    constructor() {
-        this.getAccount = async (addr) => {
-            const { account } = await fcl.send([fcl.getAccount(addr)]);
-            return account;
-        };
-    }
     async getLatestBlockHeight() {
         const blockHeight = await sdk_latest_block_1.latestBlock();
         return blockHeight.height;
