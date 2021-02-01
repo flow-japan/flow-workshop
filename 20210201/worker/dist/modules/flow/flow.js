@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FlowService = void 0;
+exports.flowService = exports.FlowService = void 0;
 const fcl = __importStar(require("@onflow/fcl"));
 const sdk_latest_block_1 = require("@onflow/sdk-latest-block");
 const sdk_send_1 = require("@onflow/sdk-send");
@@ -57,3 +57,6 @@ class FlowService {
     }
 }
 exports.FlowService = FlowService;
+fcl.config().put('accessNode.api', process.env.FLOW_NODE);
+const flowService = new FlowService();
+exports.flowService = flowService;

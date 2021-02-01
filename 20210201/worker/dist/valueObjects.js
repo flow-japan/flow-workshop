@@ -1,10 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SaleOfferFinishedEvent = exports.SaleOfferAcceptedEvent = exports.CollectionInsertedSaleOfferEvent = exports.SaleOfferCreatedEvent = exports.BlockRange = void 0;
-class BlockRange {
-    constructor(_start, _end) {
-        this._start = _start;
-        this._end = _end;
+exports.SaleOfferFinishedEvent = exports.SaleOfferAcceptedEvent = exports.CollectionInsertedSaleOfferEvent = exports.SaleOfferCreatedEvent = exports.RangeSettingsToFetchEvents = void 0;
+class RangeSettingsToFetchEvents {
+    constructor(_latestHeight, _lastHeight, _cusorId) {
+        this._latestHeight = _latestHeight;
+        this._lastHeight = _lastHeight;
+        this._cusorId = _cusorId;
+        this._start =
+            this._lastHeight === 0 ? this._latestHeight - 1000 : this._lastHeight;
+        this._end =
+            this._lastHeight + 1000 > this._latestHeight
+                ? this._latestHeight
+                : this._lastHeight + 1000;
         if (this._start >= this._end) {
             console.error('start height is bigger than /equal to end height');
         }
@@ -18,8 +25,14 @@ class BlockRange {
     get diff() {
         return this._end - this._start;
     }
+    get cursorId() {
+        return this._cusorId;
+    }
+    get isLast() {
+        return this._end === this._latestHeight;
+    }
 }
-exports.BlockRange = BlockRange;
+exports.RangeSettingsToFetchEvents = RangeSettingsToFetchEvents;
 class Event {
     constructor(_type, _transactionId, _blockHeight) {
         this._type = _type;

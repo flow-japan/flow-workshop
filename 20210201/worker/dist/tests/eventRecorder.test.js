@@ -19,8 +19,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const eventRecorder_1 = require("../worker/eventRecorder");
-const fcl = __importStar(require("@onflow/fcl"));
+const eventRecorder_1 = require("../controller/eventProcessor/eventRecorder");
+const fcl = __importStar(require("../controller/node_modules/@onflow/fcl"));
 const dbAccessor_1 = require("../modules/db/dbAccessor");
 fcl.config().put('accessNode.api', process.env.FLOW_NODE);
 dbAccessor_1.dbAccessor.init();
