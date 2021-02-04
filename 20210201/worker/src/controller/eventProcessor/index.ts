@@ -17,9 +17,11 @@ const EVENT_NAMES = [
 export async function eventProcessor() {
   const range = await generateRangeSettings();
   const events = await eventFetcher(EVENT_NAMES, range);
+
   if (events === []) {
     return;
   }
+
   for (const anEvent of events) {
     await eventRecorder(anEvent);
   }

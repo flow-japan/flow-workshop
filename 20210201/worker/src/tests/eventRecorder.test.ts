@@ -58,26 +58,6 @@ test('Accepted Event', async () => {
   expect(purchase).toBeDefined();
 });
 
-// test('Finish Event', async () => {
-//   await eventRecorder([
-//     {
-//       type: 'A.fc40912427c789d2.SampleMarket.SaleOfferFinished',
-//       transactionId:
-//         'b3b36a1b419865e0238dcfb66175901615318ccb526f48a8711997bbdf27bbaf',
-//       transactionIndex: 1,
-//       eventIndex: 7,
-//       data: {
-//         id: SALE_OFFER_ID,
-//         itemTokenAddress: ITEM_TOKEN_ADDRESS,
-//         itemTokenName: ITEM_TOKEN_NAME,
-//         itemID: ITEM_ID,
-//       },
-//       blockHeight: BLOCKHEIGHT_2,
-//     },
-//   ]);
-//   const saleOffer = await dbAccessor.getSaleOffer(SALE_OFFER_ID);
-//   expect(saleOffer.isFinished).toBeTruthy();
-// });
 test('inserted event', async () => {
   await eventRecorder({
     type: 'A.fc40912427c789d2.SampleMarket.CollectionInsertedSaleOffer',
