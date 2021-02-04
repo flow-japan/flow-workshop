@@ -1,10 +1,6 @@
 import { dbAccessor } from '../../modules/db/dbAccessor';
 import * as t from '../../types';
 
-type EventsByTransactions = {
-  [x: string]: t.Event[];
-};
-
 async function eventRecorder(event: t.Event): Promise<void> {
   if (isCreatedEvent(event)) {
     const data = event.data as t.SaleOfferCreatedEventData;
@@ -54,25 +50,6 @@ async function eventRecorder(event: t.Event): Promise<void> {
     await dbAccessor.updateCollectionAddressInSaleOffer(data.saleOfferId, '');
   }
   await dbAccessor.insertFlowEvent(JSON.stringify(event), event.blockHeight);
-}
-
-function sortByEventIndex(events: t.Event[]): t.Event[] {
-  return events.sort((a, b) => a.eventIndex - b.eventIndex);
-}
-function sortByHeight(events: t.Event[]): t.Event[] {
-  return events.sort((a, b) => a.blockHeight - b.blockHeight);
-}
-function groupByTransactionId(events: t.Event[]): t.Event[][] {
-  const sortedEvents = sortByHeight(events);
-  const result = {} as EventsByTransactions;
-  sortedEvents.forEach((x) => {
-    if (!result[x.transactionId]) {
-      result[x.transactionId] = [x];
-    } else {
-      result[x.transactionId] = [x, ...result[x.transactionId]];
-    }
-  });
-  return Object.values(result);
 }
 
 function isCreatedEvent(event: t.Event): boolean {

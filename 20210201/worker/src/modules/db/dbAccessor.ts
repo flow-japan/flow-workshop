@@ -195,5 +195,5 @@ class DBAccessor {
   }
 }
 const dbAccessor = new DBAccessor();
-
+dbAccessor.init();
 export { dbAccessor, DBAccessor };

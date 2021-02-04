@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from 'express';
-import { DBAccessor } from '../../modules/db/dbAccessor';
+import { dbAccessor } from '../../modules/db/dbAccessor';
 
-function initMarketRouter(dbAccessor: DBAccessor): Router {
+function initMarketRouter(): Router {
   const router = express.Router();
   router.get('/sales', (req: Request, res: Response) => {
     const limit: number =

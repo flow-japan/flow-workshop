@@ -17,7 +17,3 @@ export async function eventFetcher(
 
   return events;
 }
-
-type EventsByTransactions = {
-  [x: string]: t.Event[];
-};

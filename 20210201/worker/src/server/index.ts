@@ -1,43 +1,33 @@
-import initExpress from './initExpress';
-import Knex from 'knex';
+import 'express-async-errors';
+import express, { Request, Response, Express } from 'express';
+import cors from 'cors';
+import { json, urlencoded } from 'body-parser';
+import initMarketRouter from './routes/market';
+import initEventMonitorRouter from './routes/eventMonitor';
 
-async function run() {
-  const knexInstance: Knex = Knex({
-    client: 'postgresql',
-    connection: {
-      user: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_NAME,
-      host: process.env.DB_HOST,
-    },
-    migrations: {
-      directory:
-        process.env.MIGRATION_PATH || './src/modules/db/objection/migrations',
-    },
-  });
+const V1 = '/v1/';
 
-  // Make sure to disconnect from DB when exiting the process
-  process.on('SIGTERM', (): void => {
-    knexInstance
-      .destroy()
-      .then(() => {
-        process.exit(0);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  });
-  await knexInstance.migrate.latest();
-
-  const app = initExpress(knexInstance);
-
+function run() {
+  const app = initExpress();
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
     console.log(`Listening on port ${port}!`);
   });
 }
 
-run().catch((e) => {
-  console.error('error', e);
-  process.exit(1);
-});
+function initExpress(): Express {
+  const app = express();
+
+  app.use(cors());
+  app.use(json());
+  app.use(urlencoded({ extended: false }));
+  app.use(V1, initMarketRouter());
+  app.use(V1, initEventMonitorRouter());
+  app.all('*', (req: Request, res: Response) => {
+    res.sendStatus(404);
+  });
+
+  return app;
+}
+
+run();
