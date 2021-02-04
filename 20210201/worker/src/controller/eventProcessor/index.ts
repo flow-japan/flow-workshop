@@ -1,5 +1,5 @@
 import { dbAccessor } from '../../modules/db/dbAccessor';
-import { flowService } from '../../modules/flow/flow';
+import { flowService } from '../../modules/flow/flowAccessor';
 import { RangeSettingsToFetchEvents } from '../../valueObjects';
 import { eventFetcher } from './eventFetcher';
 import { eventRecorder } from './eventRecorder';

@@ -1,4 +1,4 @@
-import { flowService } from '../../modules/flow/flow';
+import { flowService } from '../../modules/flow/flowAccessor';
 import { RangeSettingsToFetchEvents } from '../../valueObjects';
 
 import * as t from '../../types';
