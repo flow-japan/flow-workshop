@@ -42,8 +42,8 @@ pub contract SampleMarket {
     // A sale offer has been removed from the collection of Address.
     pub event CollectionRemovedSaleOffer(saleOfferId: UInt64, saleItemTokenAddress: Address, saleItemTokenName: String, saleItemID: UInt64, saleItemCollection: Address)
 
-    pub let CollectionStoragePath: Path
-    pub let CollectionPublicPath: Path
+    pub let CollectionStoragePath: StoragePath
+    pub let CollectionPublicPath: PublicPath
 
     pub var saleOfferCount: UInt64
 
@@ -348,8 +348,8 @@ pub contract SampleMarket {
 
     init () {
         //FIXME: REMOVE SUFFIX BEFORE RELEASE
-        self.CollectionStoragePath = /storage/SampleMarketCollection002
-        self.CollectionPublicPath = /public/SampleMarketCollection002
+        self.CollectionStoragePath = /storage/SampleMarketCollection003
+        self.CollectionPublicPath = /public/SampleMarketCollection003
 
         self.saleOfferCount = 0
     }
