@@ -1,4 +1,3 @@
-import * as fcl from '../../node_modules/@onflow/fcl';
 import initExpress from './initExpress';
 import Knex from 'knex';
 
@@ -18,14 +17,17 @@ async function run() {
   });
 
   // Make sure to disconnect from DB when exiting the process
-  process.on('SIGTERM', () => {
-    knexInstance.destroy().then(() => {
-      process.exit(0);
-    });
+  process.on('SIGTERM', (): void => {
+    knexInstance
+      .destroy()
+      .then(() => {
+        process.exit(0);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   });
   await knexInstance.migrate.latest();
-
-  fcl.config().put('accessNode.api', process.env.FLOW_NODE);
 
   const app = initExpress(knexInstance);
 

@@ -28,8 +28,8 @@ const sdk_send_1 = require("@onflow/sdk-send");
 const sdk_build_get_events_1 = require("@onflow/sdk-build-get-events");
 class FlowService {
     async getLatestBlockHeight() {
-        const blockHeight = await sdk_latest_block_1.latestBlock();
-        return blockHeight.height;
+        const { height: blockHeight } = await sdk_latest_block_1.latestBlock();
+        return blockHeight;
     }
     async getSingleEvent(eventName, range) {
         try {

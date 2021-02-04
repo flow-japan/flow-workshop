@@ -2,6 +2,11 @@
   "name": "flow-tokens",
   "version": "0.0.1",
   "description": "",
+  "jest": {
+    "testMatch": [
+      "<rootDir>/**/*.ts"
+    ]
+  },
   "main": "index.js",
   "scripts": {
     "start:dev": "tsnd --respawn src/server/index.ts --debug --watch",

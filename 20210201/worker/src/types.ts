@@ -5,13 +5,13 @@ export interface Event {
   eventIndex: number;
   blockHeight: number;
   data:
-    | SaleOfferCreatedEventData
-    | SaleOfferAcceptedEventData
-    | SaleOfferFinishedEventData
-    | CollectionInsertedSaleOffer
-    | CollectionRemovedSaleOffer
-    | DepositEventData
-    | WithdrawEventData;
+  | SaleOfferCreatedEventData
+  | SaleOfferAcceptedEventData
+  | SaleOfferFinishedEventData
+  | CollectionInsertedSaleOffer
+  | CollectionRemovedSaleOffer
+  | DepositEventData
+  | WithdrawEventData;
 }
 
 export type WithdrawEventData = {

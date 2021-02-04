@@ -4,7 +4,7 @@ import { DBAccessor } from '../../modules/db/dbAccessor';
 function initMarketRouter(dbAccessor: DBAccessor): Router {
   const router = express.Router();
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  router.get('/market/latest', async (req: Request, res: Response) => {
+  router.get('/sales', async (req: Request, res: Response) => {
     const limit: number =
       typeof req.query.limit === 'string' ? parseInt(req.query.limit) : 20;
     const offset: number =

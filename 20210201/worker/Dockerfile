@@ -9,4 +9,5 @@ ENV DB_NAME kitty_items
 ENV DB_HOST host.docker.internal
 ENV FLOW_NODE https://access-testnet.onflow.org
 COPY . .
-CMD ["yarn","run","start"]
+RUN bash
+#CMD ["yarn","run","start:dev"]

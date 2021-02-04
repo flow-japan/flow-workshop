@@ -1,8 +1,6 @@
 import { eventRecorder } from '../controller/eventProcessor/eventRecorder';
-import * as fcl from '@onflow/fcl';
 import { dbAccessor } from '../modules/db/dbAccessor';
 
-fcl.config().put('accessNode.api', process.env.FLOW_NODE);
 dbAccessor.init();
 
 const SALE_OFFER_ID: number = Math.floor(new Date().getTime() / 1000);

@@ -8,3 +8,10 @@ services:
       - POSTGRES_DB=kitty_items
       - POSTGRES_USER=kitty_user
       - POSTGRES_PASSWORD=kitty_password
+  flow-demo:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/usr/src/app/
+      - ./usr/src/app/node_modules
