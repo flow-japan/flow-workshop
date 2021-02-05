@@ -1,7 +1,6 @@
 import { dbAccessor } from '../../modules/db/dbAccessor';
 import { flowService } from '../../modules/flow/flowAccessor';
 import { RangeSettingsToFetchEvents } from '../../valueObjects';
-import { eventFetcher } from './eventFetcher';
 import { eventRecorder } from './eventRecorder';
 
 //constants
@@ -14,10 +13,10 @@ const EVENT_NAMES = [
   'A.fc40912427c789d2.SampleMarket.CollectionRemovedSaleOffer',
 ];
 
-export async function eventProcessor() {
-  const range = await generateRangeSettings();
-  const events = await eventFetcher(EVENT_NAMES, range);
-
+export async function eventProcessor(
+  range: RangeSettingsToFetchEvents,
+): Promise<void | string> {
+  const events = await flowService.getMultipleEvents(EVENT_NAMES, range);
   if (events === []) {
     return;
   }
@@ -30,17 +29,6 @@ export async function eventProcessor() {
   if (range.isLast) {
     return `fetched from ${range.start} to ${range.end}`;
   }
-  console.log('start fetching next Block Range.');
-  await eventProcessor();
-}
-
-async function generateRangeSettings() {
-  const latestHeight = await flowService.getLatestBlockHeight();
-  const {
-    id: cursorId,
-    current_block_height: cursorHeight,
-  } = await dbAccessor.findLatestBlockCursor(TOKEN_NAME);
-  return new RangeSettingsToFetchEvents(latestHeight, cursorHeight, cursorId);
 }
 
 async function updateBlockCursor(range: RangeSettingsToFetchEvents) {

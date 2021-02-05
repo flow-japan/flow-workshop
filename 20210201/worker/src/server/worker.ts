@@ -1,7 +1,13 @@
+import { eventProcessor } from '../controller/eventProcessor';
+import { generateRangeSettings } from '../controller/rangeGenerator';
+const TOKEN_NAME = 'kitty_items';
 async function run(): Promise<void> {
   while (true) {
-    console.log('8');
-    await delay(10000);
+    const range = await generateRangeSettings(TOKEN_NAME);
+    await eventProcessor(range);
+    if (range.isLast) {
+      await delay(20000);
+    }
   }
 }
 

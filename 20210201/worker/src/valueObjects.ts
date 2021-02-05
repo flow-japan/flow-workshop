@@ -4,16 +4,20 @@ export class RangeSettingsToFetchEvents {
   constructor(
     private readonly _latestHeight: number,
     private readonly _lastHeight: number,
-    private readonly _cusorId: string,
+    private readonly _cusorId: string | undefined,
   ) {
-    this._start =
-      this._lastHeight === 0 ? this._latestHeight - 1000 : this._lastHeight;
-    this._end =
-      this._lastHeight + 1000 > this._latestHeight
-        ? this._latestHeight
-        : this._lastHeight + 1000;
+    if (_lastHeight === 0) {
+      this._start = this._latestHeight - 1000;
+      this._end = this._latestHeight;
+    } else {
+      this._start = this._lastHeight;
+      this._end =
+        this._lastHeight + 1000 > this._latestHeight
+          ? this._latestHeight
+          : this._lastHeight + 1000;
+    }
 
-    if (this._start >= this._end) {
+    if (this._start > this._end) {
       console.error('start height is bigger than /equal to end height');
     }
   }
@@ -26,7 +30,7 @@ export class RangeSettingsToFetchEvents {
   get diff(): number {
     return this._end - this._start;
   }
-  get cursorId(): string {
+  get cursorId(): string | undefined {
     return this._cusorId;
   }
   get isLast(): boolean {

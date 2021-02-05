@@ -17,7 +17,7 @@ test('can find an event in block range', async () => {
   expect(result[0].data.itemID).toEqual(3);
 });
 test('can find events in block range', async () => {
-  const range = new RangeSettingsToFetchEvents(22113309, 22113300, 'CURSOR_ID');
+  const range = new RangeSettingsToFetchEvents(22358599, 22358590, 'CURSOR_ID');
   const result = await flowService.getMultipleEvents(
     [
       'A.fc40912427c789d2.SampleMarket.SaleOfferCreated',
@@ -29,5 +29,5 @@ test('can find events in block range', async () => {
     range,
   );
   expect(result[0].data.itemID).toEqual(3);
-  expect(result[1].data.itemID).toEqual(3);
+  expect(result[1].data.saleItemID).toEqual(3);
 });
