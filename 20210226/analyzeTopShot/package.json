@@ -1,0 +1,14 @@
+{
+  "name": "analyzeTopShot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/bigquery": "^5.5.0",
+    "@onflow/fcl": "0.0.68-alpha.10",
+    "@onflow/sdk": "0.0.45-alpha.10",
+    "add": "^2.0.6",
+    "csv-writer": "^1.6.0",
+    "yarn": "^1.22.10"
+  }
+}
