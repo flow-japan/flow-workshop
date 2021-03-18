@@ -2,7 +2,7 @@ import FungibleToken from 0xFUNGIBLETOKENADDRESS
 import NonFungibleToken from 0xNONFUNGIBLETOKEN
 import Kibble from 0xKIBBLE
 import KittyItems from 0xKITTYITEMS
-import SampleMarket from 0xKITTYMARKET
+import SampleMarket from 0xSAMPLEMARKET
 
 pub fun hasKibble(_ address: Address): Bool {
   let receiver = getAccount(address)

@@ -29,55 +29,55 @@ pub contract SampleMarket {
     // SaleOffer events.
     //
     // A sale offer has been created.
-    pub event SaleOfferCreated(itemTokenAddress: Address, itemID: UInt64, price: UFix64, paymentTokenAddress: Address)
+    pub event SaleOfferCreated(id: UInt64, itemTokenAddress: Address, itemTokenName: String, itemID: UInt64, paymentTokenAddress: Address, paymentTokenName: String, price: UFix64)
     // Someone has purchased an item that was offered for sale.
-    pub event SaleOfferAccepted(itemTokenAddress: Address, itemID: UInt64)
+    pub event SaleOfferAccepted(id: UInt64, itemTokenAddress: Address, itemTokenName: String, itemID: UInt64)
     // A sale offer has been destroyed, with or without being accepted.
-    pub event SaleOfferFinished(itemTokenAddress: Address, itemID: UInt64)
-    
+    pub event SaleOfferFinished(id: UInt64, itemTokenAddress: Address, itemTokenName: String, itemID: UInt64)
+
     // Collection events.
     //
     // A sale offer has been inserted into the collection of Address.
-    pub event CollectionInsertedSaleOffer(saleItemTokenAddress: Address, saleItemID: UInt64, saleItemCollection: Address)
+    pub event CollectionInsertedSaleOffer(saleOfferId: UInt64, saleItemTokenAddress: Address, saleItemTokenName: String, saleItemID: UInt64, saleItemCollection: Address)
     // A sale offer has been removed from the collection of Address.
-    pub event CollectionRemovedSaleOffer(saleItemTokenAddress: Address, saleItemID: UInt64, saleItemCollection: Address)
+    pub event CollectionRemovedSaleOffer(saleOfferId: UInt64, saleItemTokenAddress: Address, saleItemTokenName: String, saleItemID: UInt64, saleItemCollection: Address)
 
-    // Named paths
-    //
-    pub let CollectionStoragePath: Path
-    pub let CollectionPublicPath: Path
+    pub let CollectionStoragePath: StoragePath
+    pub let CollectionPublicPath: PublicPath
+
+    pub var saleOfferCount: UInt64
 
     // SaleOfferPublicView
     // An interface providing a read-only view of a SaleOffer
     //
     pub resource interface SaleOfferPublicView {
         pub var saleCompleted: Bool
+        pub let id: UInt64
         pub let saleItemTokenAddress: Address
+        pub let saleItemTokenName: String
         pub let saleItemID: UInt64
         pub let salePrice: UFix64
         pub let salePaymentTokenAddress: Address
+        pub let salePaymentTokenName: String
     }
 
     // SaleOffer
-    // A KittyItems NFT being offered to sale for a set fee paid in Kibble.
+    // A NFT being offered to sale for a set fee paid in Kibble etc.
     //
     pub resource SaleOffer: SaleOfferPublicView {
-        // Whether the sale has completed with someone purchasing the item.
         pub var saleCompleted: Bool
 
-        // The item token address
+        pub let id: UInt64
+
         pub let saleItemTokenAddress: Address
-        // The KittyItems NFT ID for sale.
+        pub let saleItemTokenName: String
         pub let saleItemID: UInt64
-        // The collection containing that ID.
         access(self) let sellerItemProvider: Capability<&AnyResource{NonFungibleToken.Provider}>
 
-        // The sale payment price.
         pub let salePrice: UFix64
-        // The Kibble vault that will receive that payment if teh sale completes successfully.
-        access(self) let sellerPaymentReceiver: Capability<&AnyResource{FungibleToken.Receiver}>
-        // The sale payment token address
         pub let salePaymentTokenAddress: Address
+        pub let salePaymentTokenName: String
+        access(self) let sellerPaymentReceiver: Capability<&AnyResource{FungibleToken.Receiver}>
 
         // Called by a purchaser to accept the sale offer.
         // If they send the correct payment in Kibble, and if the item is still available,
@@ -99,27 +99,38 @@ pub contract SampleMarket {
             let nft <- self.sellerItemProvider.borrow()!.withdraw(withdrawID: self.saleItemID)
             buyerCollection.deposit(token: <-nft)
 
-            emit SaleOfferAccepted(itemTokenAddress: self.saleItemTokenAddress, itemID: self.saleItemID)
+            emit SaleOfferAccepted(
+                id: self.id,
+                itemTokenAddress: self.saleItemTokenAddress,
+                itemTokenName: self.saleItemTokenName,
+                itemID: self.saleItemID
+            )
         }
 
-        // destructor
-        //
         destroy() {
             // Whether the sale completed or not, publicize that it is being withdrawn.
-            emit SaleOfferFinished(itemTokenAddress: self.saleItemTokenAddress, itemID: self.saleItemID)
+            emit SaleOfferFinished(
+                id: self.id,
+                itemTokenAddress: self.saleItemTokenAddress,
+                itemTokenName: self.saleItemTokenName,
+                itemID: self.saleItemID
+            )
         }
 
         // initializer
         // Take the information required to create a sale offer, notably the capability
-        // to transfer the KittyItems NFT and the capability to receive Kibble in payment.
+        // to transfer the NFT and the capability to receive Kibble etc. in payment.
         //
         init(
-            sellerItemProvider: Capability<&AnyResource{NonFungibleToken.Provider}>,
+            id: UInt64,
             saleItemTokenAddress: Address,
+            saleItemTokenName: String,
             saleItemID: UInt64,
-            sellerPaymentReceiver: Capability<&AnyResource{FungibleToken.Receiver}>,
+            sellerItemProvider: Capability<&AnyResource{NonFungibleToken.Provider}>,
+            salePaymentTokenAddress: Address, // TODO: この情報が正しいことを確認すべき（現状の Cadence 仕様では難しい）
+            salePaymentTokenName: String,
             salePrice: UFix64,
-            salePaymentTokenAddress: Address // TODO: この情報が正しいことを確認すべき（現状の Cadence 仕様では難しい）
+            sellerPaymentReceiver: Capability<&AnyResource{FungibleToken.Receiver}>
         ) {
             pre {
                 sellerItemProvider.borrow() != nil: "Cannot borrow seller"
@@ -128,15 +139,27 @@ pub contract SampleMarket {
 
             self.saleCompleted = false
 
-            self.sellerItemProvider = sellerItemProvider
+            self.id = id
+
             self.saleItemTokenAddress = saleItemTokenAddress
+            self.saleItemTokenName = saleItemTokenName
+            self.sellerItemProvider = sellerItemProvider
             self.saleItemID = saleItemID
 
+            self.salePaymentTokenAddress = salePaymentTokenAddress
+            self.salePaymentTokenName = salePaymentTokenName
             self.sellerPaymentReceiver = sellerPaymentReceiver
             self.salePrice = salePrice
-            self.salePaymentTokenAddress = salePaymentTokenAddress
 
-            emit SaleOfferCreated(itemTokenAddress: self.saleItemTokenAddress, itemID: self.saleItemID, price: self.salePrice, paymentTokenAddress: self.salePaymentTokenAddress)
+            emit SaleOfferCreated(
+                id: self.id,
+                itemTokenAddress: self.saleItemTokenAddress,
+                itemTokenName: self.saleItemTokenName,
+                itemID: self.saleItemID,
+                paymentTokenAddress: self.salePaymentTokenAddress,
+                paymentTokenName: self.salePaymentTokenName,
+                price: self.salePrice,
+            )
         }
     }
 
@@ -144,21 +167,28 @@ pub contract SampleMarket {
     // Make creating a SaleOffer publicly accessible.
     //
     pub fun createSaleOffer (
-        sellerItemProvider: Capability<&AnyResource{NonFungibleToken.Provider}>,
         saleItemTokenAddress: Address,
+        saleItemTokenName: String,
         saleItemID: UInt64,
-        sellerPaymentReceiver: Capability<&AnyResource{FungibleToken.Receiver}>,
+        sellerItemProvider: Capability<&AnyResource{NonFungibleToken.Provider}>,
+        salePaymentTokenAddress: Address,
+        salePaymentTokenName: String,
         salePrice: UFix64,
-        salePaymentTokenAddress: Address
+        sellerPaymentReceiver: Capability<&AnyResource{FungibleToken.Receiver}>
     ): @SaleOffer {
-        return <-create SaleOffer(
-            sellerItemProvider: sellerItemProvider,
+        let saleOffer <-create SaleOffer(
+            id: SampleMarket.saleOfferCount,
             saleItemTokenAddress: saleItemTokenAddress,
+            saleItemTokenName: saleItemTokenName,
             saleItemID: saleItemID,
-            sellerPaymentReceiver: sellerPaymentReceiver,
+            sellerItemProvider: sellerItemProvider,
+            salePaymentTokenAddress: salePaymentTokenAddress,
+            salePaymentTokenName: salePaymentTokenName,
             salePrice: salePrice,
-            salePaymentTokenAddress: salePaymentTokenAddress
+            sellerPaymentReceiver: sellerPaymentReceiver
         )
+        SampleMarket.saleOfferCount = SampleMarket.saleOfferCount + (1 as UInt64)
+        return <- saleOffer
     }
 
     // CollectionManager
@@ -167,7 +197,7 @@ pub contract SampleMarket {
     //
     pub resource interface CollectionManager {
         pub fun insert(offer: @SampleMarket.SaleOffer)
-        pub fun remove(saleItemTokenAddress: Address, saleItemID: UInt64): @SaleOffer 
+        pub fun remove(saleItemTokenAddress: Address, saleItemTokenName: String, saleItemID: UInt64): @SaleOffer 
     }
 
     // CollectionPurchaser
@@ -178,6 +208,7 @@ pub contract SampleMarket {
     pub resource interface CollectionPurchaser {
         pub fun purchase(
             saleItemTokenAddress: Address,
+            saleItemTokenName: String,
             saleItemID: UInt64,
             buyerCollection: &AnyResource{NonFungibleToken.Receiver},
             buyerPayment: @FungibleToken.Vault
@@ -188,10 +219,11 @@ pub contract SampleMarket {
     // An interface to allow listing and borrowing SaleOffers, and purchasing items via SaleOffers in a collection.
     //
     pub resource interface CollectionPublic {
-        pub fun getSaleOfferIDs(saleItemTokenAddress: Address): [UInt64]
-        pub fun borrowSaleItem(saleItemTokenAddress: Address, saleItemID: UInt64): &SaleOffer{SaleOfferPublicView}
+        pub fun getSaleOfferKeys(): [String]
+        pub fun borrowSaleItem(saleItemTokenAddress: Address, saleItemTokenName: String, saleItemID: UInt64): &SaleOffer{SaleOfferPublicView}
         pub fun purchase(
             saleItemTokenAddress: Address,
+            saleItemTokenName: String,
             saleItemID: UInt64,
             buyerCollection: &AnyResource{NonFungibleToken.Receiver},
             buyerPayment: @FungibleToken.Vault
@@ -202,30 +234,52 @@ pub contract SampleMarket {
     // A resource that allows its owner to manage a list of SaleOffers, and purchasers to interact with them.
     //
     pub resource Collection : CollectionManager, CollectionPurchaser, CollectionPublic {
-        pub var saleOffers: @{UInt64: SaleOffer}
+        pub var saleOffers: @{String: SaleOffer}
 
         // insert
         // Insert a SaleOffer into the collection, replacing one with the same saleItemID if present.
         //
-         pub fun insert(offer: @SampleMarket.SaleOffer) {
-            // TODO: saleOffers の構造を変える
-            let tokenAddress: Address = offer.saleItemTokenAddress
-
-            let id: UInt64 = offer.saleItemID
+        pub fun insert(offer: @SampleMarket.SaleOffer) {
+            let saleOfferId = offer.id
+            let tokenAddress = offer.saleItemTokenAddress
+            let tokenName = offer.saleItemTokenName
+            let id = offer.saleItemID
+            let key = tokenAddress.toString()
+                .concat(".")
+                .concat(tokenName)
+                .concat(".")
+                .concat(id.toString())
 
             // add the new offer to the dictionary which removes the old one
-            let oldOffer <- self.saleOffers[id] <- offer
+            let oldOffer <- self.saleOffers[key] <- offer
             destroy oldOffer
 
-            emit CollectionInsertedSaleOffer(saleItemTokenAddress: tokenAddress, saleItemID: id, saleItemCollection: self.owner?.address!)
+            emit CollectionInsertedSaleOffer(
+                saleOfferId: saleOfferId,
+                saleItemTokenAddress: tokenAddress,
+                saleItemTokenName: tokenName,
+                saleItemID: id,
+                saleItemCollection: self.owner?.address!
+            )
         }
 
         // remove
         // Remove and return a SaleOffer from the collection.
-        pub fun remove(saleItemTokenAddress: Address, saleItemID: UInt64): @SaleOffer {
-            emit CollectionRemovedSaleOffer(saleItemTokenAddress: saleItemTokenAddress, saleItemID: saleItemID, saleItemCollection: self.owner?.address!)
-            // TODO: saleOffers の構造を変える
-            return <-(self.saleOffers.remove(key: saleItemID) ?? panic("missing SaleOffer"))
+        pub fun remove(saleItemTokenAddress: Address, saleItemTokenName: String, saleItemID: UInt64): @SaleOffer {
+            let key = saleItemTokenAddress.toString()
+                .concat(".")
+                .concat(saleItemTokenName)
+                .concat(".")
+                .concat(saleItemID.toString())
+            let offer <-(self.saleOffers.remove(key: key) ?? panic("missing SaleOffer"))
+            emit CollectionRemovedSaleOffer(
+                saleOfferId: offer.id,
+                saleItemTokenAddress: saleItemTokenAddress,
+                saleItemTokenName: saleItemTokenName,
+                saleItemID: saleItemID,
+                saleItemCollection: self.owner?.address!
+            )
+            return <- offer
         }
  
         // purchase
@@ -242,71 +296,61 @@ pub contract SampleMarket {
         //
         pub fun purchase(
             saleItemTokenAddress: Address,
+            saleItemTokenName: String,
             saleItemID: UInt64,
             buyerCollection: &AnyResource{NonFungibleToken.Receiver},
             buyerPayment: @FungibleToken.Vault
         ) {
             pre {
-                self.saleOffers[saleItemID] != nil: "SaleOffer does not exist in the collection!"
+                self.saleOffers[saleItemTokenAddress.toString().concat(".").concat(saleItemTokenName).concat(".").concat(saleItemID.toString())] != nil: "SaleOffer does not exist in the collection!"
             }
-            let offer <- self.remove(saleItemTokenAddress: saleItemTokenAddress, saleItemID: saleItemID)
+            let offer <- self.remove(
+                saleItemTokenAddress: saleItemTokenAddress,
+                saleItemTokenName: saleItemTokenName,
+                saleItemID: saleItemID
+            )
             offer.accept(buyerCollection: buyerCollection, buyerPayment: <-buyerPayment)
             //FIXME: Is this correct? Or should we return it to the caller to dispose of?
             destroy offer
         }
 
-        // TODO: 実装する
-        // // getSaleOfferTokenAddresses
-        // // Returns an array of the token addresses that are in the collection
-        // //
-        // pub fun getSaleOfferIDs(): [Address] {
-        //     return self.saleOffers.keys
-        // }
-
-        // getSaleOfferIDs
-        // Returns an array of the IDs that are in the collection of the token address
-        //
-        pub fun getSaleOfferIDs(saleItemTokenAddress: Address): [UInt64] {
-            // TODO: 構造を変える
+        pub fun getSaleOfferKeys(): [String] {
             return self.saleOffers.keys
         }
 
         // borrowSaleItem
-        // Returns a read-only view of the SaleItem for the given saleItemID if it is contained by this collection.
+        // Returns a read-only view of the SaleItem for the given saleItemTokenAddress, saleItemTokenName and saleItemID if it is contained by this collection.
         //
-        pub fun borrowSaleItem(saleItemTokenAddress: Address, saleItemID: UInt64): &SaleOffer{SaleOfferPublicView} {
-            // TODO: 構造を変える
+        pub fun borrowSaleItem(saleItemTokenAddress: Address, saleItemTokenName: String, saleItemID: UInt64): &SaleOffer{SaleOfferPublicView} {
             pre {
-                self.saleOffers[saleItemID] != nil: "SaleOffer does not exist in the collection!"
+                self.saleOffers[saleItemTokenAddress.toString().concat(".").concat(saleItemTokenName).concat(".").concat(saleItemID.toString())] != nil: "SaleOffer does not exist in the collection!"
             }
-            return &self.saleOffers[saleItemID] as &SaleOffer{SaleOfferPublicView}
+            let key = saleItemTokenAddress.toString()
+                .concat(".")
+                .concat(saleItemTokenName)
+                .concat(".")
+                .concat(saleItemID.toString())
+            return &self.saleOffers[key] as &SaleOffer{SaleOfferPublicView}
         }
 
-        // destructor
-        //
         destroy () {
-            // TODO: 構造を変える
             destroy self.saleOffers
         }
 
-        // constructor
-        //
         init () {
-            // TODO: 構造を変える
             self.saleOffers <- {}
         }
     }
 
-    // createEmptyCollection
-    // Make creating a Collection publicly accessible.
-    //
     pub fun createEmptyCollection(): @Collection {
         return <-create Collection()
     }
 
     init () {
         //FIXME: REMOVE SUFFIX BEFORE RELEASE
-        self.CollectionStoragePath = /storage/SampleMarketCollection000
-        self.CollectionPublicPath = /public/SampleMarketCollection000
+        self.CollectionStoragePath = /storage/SampleMarketCollection003
+        self.CollectionPublicPath = /public/SampleMarketCollection003
+
+        self.saleOfferCount = 0
     }
 }

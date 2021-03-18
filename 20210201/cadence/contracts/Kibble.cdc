@@ -38,10 +38,10 @@ pub contract Kibble: FungibleToken {
 
     // Named paths
     //
-    pub let VaultStoragePath: Path
-    pub let ReceiverPublicPath: Path
-    pub let BalancePublicPath: Path
-    pub let AdminStoragePath: Path
+    pub let VaultStoragePath: StoragePath
+    pub let ReceiverPublicPath: PublicPath
+    pub let BalancePublicPath: PublicPath
+    pub let AdminStoragePath: StoragePath
 
     // Total supply of Kibbles in existence
     pub var totalSupply: UFix64
@@ -160,13 +160,21 @@ pub contract Kibble: FungibleToken {
         }
     }
 
+    // test code
+    pub fun createNewMinter(): @Minter {
+        let admin <- create Administrator()
+        let minter <- admin.createNewMinter(allowedAmount: 100.0)
+        destroy admin
+        return <-minter
+    }
+
     init() {
         // Set our named paths.
         //FIXME: REMOVE SUFFIX BEFORE RELEASE
-        self.VaultStoragePath = /storage/KibbleVault000
-        self.ReceiverPublicPath = /public/KibbleReceiver000
-        self.BalancePublicPath = /public/KibbleBalance000
-        self.AdminStoragePath = /storage/KibbleAdmin000
+        self.VaultStoragePath = /storage/KibbleVaultMod001
+        self.ReceiverPublicPath = /public/KibbleReceiverMod001
+        self.BalancePublicPath = /public/KibbleBalanceMod001
+        self.AdminStoragePath = /storage/KibbleAdminMod001
 
         // Initialize contract state.
         self.totalSupply = 0.0

@@ -1,4 +1,5 @@
 {
+  "private": true,
   "scripts": {
     "test": "mocha",
     "dev-wallet": "PK=68ee617d9bf67a4677af80aaca5a090fcda80ff2f4dbc340e0e36201fa1f1d8c fcl-wallet"
@@ -10,11 +11,9 @@
     "@onflow/sdk": "^0.0.44",
     "@onflow/types": "^0.0.4",
     "chai": "^4.2.0",
-    "elliptic": "^6.5.3",
-    "mocha": "^8.2.1",
-    "sha3": "^2.1.3"
+    "mocha": "^8.2.1"
   },
   "mocha": {
-    "timeout": 60000
+    "timeout": 100000
   }
 }
