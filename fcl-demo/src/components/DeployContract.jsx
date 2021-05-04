@@ -42,6 +42,9 @@ const DeployContract = () => {
   const [transactionResult, setTransactionResult] = useState();
   const [contractName, setContractName] = useState('HelloWorld');
   const [transaction, setTransaction] = useState(deployTransaction);
+
+  // Create contract code with the name passed from front.
+
   const updateContractName = (event) => {
     setContractName(event.target.value);
     const string = `\
@@ -49,7 +52,7 @@ const DeployContract = () => {
       prepare(acct: AuthAccount) {
         acct.contracts.add(name: "${event.target.value}", code: code.decodeHex())
       }
-    }
+    }git
     `;
     setTransaction(string);
   };
@@ -64,17 +67,18 @@ const DeployContract = () => {
 
     setStatus('Resolving...');
 
+    // Get latest block number.
     const blockResponse = await fcl.send([fcl.getLatestBlock()]);
-
     const block = await fcl.decode(blockResponse);
 
+    // Execute transaction
     try {
       const { transactionId } = await fcl.send([
-        fcl.transaction(transaction),
+        fcl.transaction(transaction), // Pass transaction code
         fcl.args([
-          fcl.arg(Buffer.from(contract, 'utf8').toString('hex'), t.String),
+          fcl.arg(Buffer.from(contract, 'utf8').toString('hex'), t.String), // Pass cadence script as an argument
         ]),
-        fcl.limit(100),
+        fcl.limit(100), // Set Network token which will be consumed with this transaction
         fcl.proposer(fcl.currentUser().authorization),
         fcl.authorizations([fcl.currentUser().authorization]),
         fcl.payer(fcl.currentUser().authorization),
@@ -83,6 +87,7 @@ const DeployContract = () => {
 
       setStatus('Transaction sent, waiting for confirmation');
 
+      // fetch transaction status until it has been confirmed in blockchain.
       const unsub = fcl.tx({ transactionId }).subscribe((aTransaction) => {
         setTransactionResult(aTransaction);
 

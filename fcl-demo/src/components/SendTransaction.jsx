@@ -45,19 +45,24 @@ const SendTransaction = () => {
     event.preventDefault();
 
     setStatus('Resolving...');
+
+    // Get latest block number.
     const blockResponse = await fcl.send([fcl.getLatestBlock()]);
     const block = await fcl.decode(blockResponse);
 
+    // Execute transaction.
     const createTxOptions = (gasValue, isRequiredAuthorized) => {
       const txOptions = [
-        fcl.transaction(transactionCode),
-        fcl.limit(gasValue),
+        fcl.transaction(transactionCode), // Transaction code.
+        fcl.limit(gasValue), // Amount of network token which will be used in this transaction.
+
+        // values for other settings.
         fcl.proposer(fcl.currentUser().authorization),
         fcl.payer(fcl.currentUser().authorization),
         fcl.ref(block.id),
       ];
       if (isRequiredAuthorized) {
-        txOptions.push(fcl.authorizations([fcl.currentUser().authorization]));
+        txOptions.push(fcl.authorizations([fcl.currentUser().authorization])); // Request authentication to user.
       }
 
       return txOptions;
@@ -68,6 +73,7 @@ const SendTransaction = () => {
 
       setStatus('Transaction sent, waiting for confirmation');
 
+      // fetch transaction status until it has been confirmed in blockchain.
       const unsub = fcl
         .tx({ transactionId })
         .subscribe((currentTransaction) => {
