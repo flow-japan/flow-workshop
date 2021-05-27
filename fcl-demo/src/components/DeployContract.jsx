@@ -52,7 +52,7 @@ const DeployContract = () => {
       prepare(acct: AuthAccount) {
         acct.contracts.add(name: "${event.target.value}", code: code.decodeHex())
       }
-    }git
+    }
     `;
     setTransaction(string);
   };
