@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "fcl-demo",
+    "mainnet": "fcl-demo-mainnet"
+  }
+}
