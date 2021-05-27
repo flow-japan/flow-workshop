@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "mocha",
+    "dev-wallet": "PK=68ee617d9bf67a4677af80aaca5a090fcda80ff2f4dbc340e0e36201fa1f1d8c fcl-wallet"
+  },
+  "dependencies": {
+    "@onflow/dev-wallet": "^0.0.10",
+    "@onflow/fcl": "^0.0.66",
+    "@onflow/rlp": "^0.0.3",
+    "@onflow/sdk": "^0.0.44",
+    "@onflow/types": "^0.0.4",
+    "chai": "^4.2.0",
+    "mocha": "^8.2.1"
+  },
+  "mocha": {
+    "timeout": 100000
+  }
+}

@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "kitty-items",
+            "database": "kitty_items",
+            "username": "kitty_user",
+            "password": "kitty_password"
+        }
+    ]
+}

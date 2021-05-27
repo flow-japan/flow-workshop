@@ -20,10 +20,13 @@ export default function Script() {
 
   const runScript = async (event) => {
     event.preventDefault();
+
+    // send script to blockchain.
     await fcl
-      .send([fcl.script(script)])
+      .send([fcl.script(script)]) // set scripts which will be sent.
       .then(async (response) => {
-        setData(await fcl.decode(response));
+        const decodedResponse = await fcl.decode(response); // decode its response.
+        setData(decodedResponse);
       })
       .catch((error) => {
         setData(String(error));
