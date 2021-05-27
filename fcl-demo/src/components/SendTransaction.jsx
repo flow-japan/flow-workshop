@@ -47,7 +47,8 @@ const SendTransaction = () => {
     setStatus('Resolving...');
 
     // Get latest block number.
-    const blockResponse = await fcl.send([fcl.getLatestBlock()]);
+    const isSealed = false;
+    const blockResponse = await fcl.send([fcl.getBlock(isSealed)]);
     const block = await fcl.decode(blockResponse);
 
     // Execute transaction.
