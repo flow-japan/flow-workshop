@@ -13,7 +13,7 @@ function App() {
       <TabList>
         <Tab>Authenticate</Tab>
         <Tab>Get Account Info</Tab>
-        <Tab>Send Script</Tab>
+        <Tab>Run Script</Tab>
         <Tab>Send Transaction</Tab>
         <Tab>Deploy Contract</Tab>
       </TabList>

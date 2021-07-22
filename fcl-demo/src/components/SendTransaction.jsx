@@ -15,11 +15,9 @@ import CodeEditor from './CodeEditor';
 import JsonViewer from './JsonViewer';
 
 const simpleTransaction = `\
-import HelloWorld from 0x80617c721f7c4cfa
-
 transaction {
-  execute {
-    HelloWorld.hello(message: "Hello from visitor")
+  prepare(acct: AuthAccount) {
+    log("Hello")
   }
 }
 `;
@@ -93,7 +91,7 @@ const SendTransaction = () => {
   return (
     <Container m={4} maxWidth="3xl">
       <Box p={2}>
-        <Heading size="lg">Send transaction</Heading>
+        <Heading size="lg">Send Transaction</Heading>
       </Box>
       <Box p={2}>
         <Checkbox

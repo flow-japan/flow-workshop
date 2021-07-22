@@ -36,7 +36,7 @@ export default function Script() {
   return (
     <Container m={4} maxWidth="3xl">
       <Box p={2}>
-        <Heading size="lg">Run script</Heading>
+        <Heading size="lg">Run Script</Heading>
       </Box>
       <Box p={2}>
         <CodeEditor value={script} onChange={updateScript} />
